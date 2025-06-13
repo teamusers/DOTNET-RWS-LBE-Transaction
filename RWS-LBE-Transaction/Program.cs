@@ -21,6 +21,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
+// Log incoming requests
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 //Conditionally run the JWT middleware for "/api/v1/" 
 var apiPrefix = "/api/v1/";
 var protectedPrefixes = new[]
@@ -31,14 +34,14 @@ var protectedPrefixes = new[]
 app.UseWhen(
     ctx =>
     {
-        // if the request path starts with any of our protected prefixes…
+        // if the request path starts with any of our protected prefixesï¿½
         var path = ctx.Request.Path;
         return protectedPrefixes
             .Any(p => path.StartsWithSegments(p, StringComparison.OrdinalIgnoreCase));
     },
     branch =>
     {
-        // …then run the JWT interceptor on that branch.
+        // ï¿½then run the JWT interceptor on that branch.
         branch.UseMiddleware<JwtInterceptorMiddleware>();
     });
 
