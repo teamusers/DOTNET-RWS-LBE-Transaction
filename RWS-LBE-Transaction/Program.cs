@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RWS_LBE_Transaction.Data;
+using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services;
 using RWS_LBE_Transaction.Services.Authentication;
 
@@ -19,6 +20,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Add http client helper implementation
+builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 var app = builder.Build();
 
 // Log incoming requests
