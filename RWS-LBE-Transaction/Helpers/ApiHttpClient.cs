@@ -67,7 +67,7 @@ namespace RWS_LBE_Transaction.Helpers
                 }
             }
 
-            _logger.LogInformation("API REQUEST: {Method} {Url}; Content-Type: {ContentType}; Body: {Body}",
+            _logger.LogInformation("[API REQUEST] {Method} {Url}; Content-Type: {ContentType}; Body: {Body}",
                 opts.Method, opts.Url, opts.ContentType, opts.Body == null ? "<empty>" : JsonSerializer.Serialize(opts.Body, _jsonOptions));
 
             using var response = await _httpClient.SendAsync(request); // no cancellation token
@@ -76,7 +76,7 @@ namespace RWS_LBE_Transaction.Helpers
 
             var sanitized = rawResponse.Replace("\n", " ").Replace("\t", " ").Trim();
 
-            _logger.LogInformation("API RESPONSE: Status: {StatusCode}; Body: {Body}",
+            _logger.LogInformation("[API RESPONSE] Status: {StatusCode}; Body: {Body}",
                 (int)response.StatusCode, sanitized);
 
             if (response.StatusCode != opts.ExpectedStatus)

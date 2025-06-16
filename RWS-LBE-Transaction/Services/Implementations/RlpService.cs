@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Configurations;
+using RWS_LBE_Transaction.DTOs.RLP.Requests;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
@@ -31,12 +32,54 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
+        public async Task<GetCampaignsByIdResponse?> GetCampaignsById(string externalId)
+        {
+            var (basicAuth, url) = BuildRlpCoreRequestInfo(RlpApiEndpoints.GetCampaignsById, externalId, null);
+
+            return await _apiHttpClient.DoApiRequestAsync<GetCampaignsByIdResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth
+            });
+        }
+
+        public async Task<FetchOffersDetailsResponse?> FetchOffersDetails(List<string> offerIdList)
+        {
+            var payload = new FetchOffersDetailsRequest
+            {
+                RetailerId = _config.RetailerId,
+                OfferIds = offerIdList,
+                Skip = 0,
+                Take = 1000
+            };
+
+            var (basicAuth, url) = BuildRlpOffersRequestInfo(RlpApiEndpoints.FetchOffersDetails, null, null);
+
+            return await _apiHttpClient.DoApiRequestAsync<FetchOffersDetailsResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
         public ((string Username, string Password) BasicAuth, string Url) BuildRlpCoreRequestInfo(string basePath, string? externalId, string? queryParams)
         {
             string username = _config.Core!.ApiKey;
             string password = _config.Core!.ApiSecret;
 
             string url = BuildRlpUrl(_config.Core!.Host, _config.Core!.ApiKey, basePath, externalId, queryParams);
+
+            return ((username, password), url);
+        }
+
+        public ((string Username, string Password) BasicAuth, string Url) BuildRlpOffersRequestInfo(string basePath, string? externalId, string? queryParams)
+        {
+            string username = _config.Offers!.ApiKey;
+            string password = _config.Offers!.ApiSecret;
+
+            string url = BuildRlpUrl(_config.Offers!.Host, _config.Offers!.ApiKey, basePath, externalId, queryParams);
 
             return ((username, password), url);
         }

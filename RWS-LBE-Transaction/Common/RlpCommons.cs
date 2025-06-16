@@ -1,12 +1,14 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
+using RWS_LBE_Transaction.Exceptions;
 
 namespace RWS_LBE_Transaction.Common
 {
     public class RlpApiEndpoints
     {
         public const string GetAllCampaigns = "/priv/v1/apps/:api_key/campaigns";
+        public const string GetCampaignsById = "/priv/v1/apps/:api_key/external/users/:external_id/campaigns";
+        public const string FetchOffersDetails = "/offers/api/2.0/offers/fetch_offers_details";
     }
 
     public class RlpApiQueries
@@ -17,24 +19,24 @@ namespace RWS_LBE_Transaction.Common
     public class RlpApiErrors
     {
         public const string UserNotFound = "user_not_found";
+        public const string NoActiveCampaignFound = "no_active_campaign_found";
 
-        public static IActionResult Handle(string raw)
+        public static IActionResult Handle(Exception ex)
         {
-            try
+            if (ex is ExternalApiException { RawResponse: not null } apiEx)
             {
-                var errResp = JsonSerializer.Deserialize<RlpErrorResponse>(raw);
-
-                if (errResp?.Errors?.Code == UserNotFound)
+                if (ApiException.TryParseJson<RlpErrorResponse>(apiEx.RawResponse, out var errResp))
                 {
-                    return new ConflictObjectResult(ResponseTemplate.ExistingUserNotFoundErrorResponse());
+                    return errResp?.Errors?.Code switch
+                    {
+                        UserNotFound => new ConflictObjectResult(ResponseTemplate.ExistingUserNotFoundErrorResponse()),
+                        NoActiveCampaignFound => new ConflictObjectResult(ResponseTemplate.ActiveCampaignNotFoundErrorResponse()),
+                        _ => new BadRequestObjectResult(ResponseTemplate.UnmappedRlpErrorResponse(errResp))
+                    };
                 }
+            }
 
-                return new BadRequestObjectResult(ResponseTemplate.UnmappedRlpErrorResponse(errResp));
-            }
-            catch (JsonException)
-            {
-                return new ObjectResult(ResponseTemplate.InternalErrorResponse()) { StatusCode = 500 };
-            }
+            return new ObjectResult(ResponseTemplate.InternalErrorResponse()) { StatusCode = 500 };
         }
     }
 }

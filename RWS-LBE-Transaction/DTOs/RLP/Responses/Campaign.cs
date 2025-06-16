@@ -13,7 +13,13 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 
         [JsonPropertyName("number_of_pages")]
         public int? NumberOfPages { get; set; }
-        
+
+        [JsonPropertyName("campaigns")]
+        public JsonElement Campaigns { get; set; }
+    }
+
+    public class GetCampaignsByIdResponse
+    {
         [JsonPropertyName("campaigns")]
         public JsonElement Campaigns { get; set; }
     }

@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Transaction.Common;
-using RWS_LBE_Transaction.Exceptions;
+using RWS_LBE_Transaction.DTOs.Responses;
+using RWS_LBE_Transaction.DTOs.RLP.Responses;
+using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
 
 namespace RWS_LBE_Transaction.Controllers
@@ -25,23 +28,65 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 return BadRequest(ResponseTemplate.InvalidQueryParametersErrorResponse());
             }
- 
+
             try
             {
                 var response = await _rlp.GetAllCampaigns(page);
 
                 return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
-            catch (ExternalApiException ex)
+            catch (Exception ex)
             {
-                return RlpApiErrors.Handle(ex.RawResponse);
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all campaigns.");
+                return RlpApiErrors.Handle(ex);
+            }
+
+        }
+
+        [HttpGet("{rlpId}")]
+        public async Task<IActionResult> GetCampaignsById([FromRoute] string rlpId)
+        {
+            GetCampaignsByIdResponse? campaignsResponse;
+            try
+            {
+                campaignsResponse = await _rlp.GetCampaignsById(rlpId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Get all campaigns error");
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get campaigns by ID.");
+                return RlpApiErrors.Handle(ex);
+            }
+
+            // ensure that response data is present
+            if (campaignsResponse?.Campaigns.ValueKind != JsonValueKind.Object)
+            {
+                _logger.LogError("[API EXCEPTION] RLP: Get campaigns by ID returned no data.");
                 return StatusCode(500, ResponseTemplate.InternalErrorResponse());
             }
 
+            var offerIdList = RlpHelper.ExtractOfferIDsFromJsonElement(campaignsResponse.Campaigns);
+            OfferDetails[]? offerDetailsList = [];
+
+            if (offerIdList.Count != 0)
+            {
+                // fetch offer details
+                try
+                {
+                    var offersResponse = await _rlp.FetchOffersDetails(offerIdList);
+                    offerDetailsList = offersResponse?.Payload?.Results;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to fetch offer details.");
+                    return RlpApiErrors.Handle(ex);
+                }
+            }
+
+            return Ok(ResponseTemplate.GenericSuccessResponse(new GetCampaignsByIdResponseData
+            {
+                Campaigns = campaignsResponse.Campaigns,
+                Offers = offerDetailsList ?? []
+            }));
         }
     }
 }

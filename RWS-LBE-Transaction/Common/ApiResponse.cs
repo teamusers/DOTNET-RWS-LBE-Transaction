@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Transaction.Common
 {
@@ -71,7 +72,27 @@ namespace RWS_LBE_Transaction.Common
         public static ApiResponse CachedProfileNotFoundErrorResponse() =>
             DefaultResponse(Codes.CACHED_PROFILE_NOT_FOUND, "cached profile not found");
 
+        public static ApiResponse ActiveCampaignNotFoundErrorResponse() =>
+            DefaultResponse(Codes.ACTIVE_CAMPAIGN_NOT_FOUND, "active campaign not found");
+
         public static ApiResponse? UnmappedRlpErrorResponse(object? rlpResponse) =>
-            new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse};
+            new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse };
+    }
+
+    public class ApiException
+    {
+        public static bool TryParseJson<T>(string raw, out T? result)
+        {
+            try
+            {
+                result = JsonSerializer.Deserialize<T>(raw);
+                return true;
+            }
+            catch (JsonException)
+            {
+                result = default;
+                return false;
+            }
+        }
     }
 }
