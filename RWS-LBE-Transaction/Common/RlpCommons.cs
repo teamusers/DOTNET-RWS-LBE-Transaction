@@ -26,14 +26,14 @@ namespace RWS_LBE_Transaction.Common
 
                 if (errResp?.Errors?.Code == UserNotFound)
                 {
-                    return new ConflictObjectResult(ApiResponse.ExistingUserNotFoundErrorResponse());
+                    return new ConflictObjectResult(ResponseTemplate.ExistingUserNotFoundErrorResponse());
                 }
 
-                return new BadRequestObjectResult(ApiResponse.UnmappedRlpErrorResponse(errResp));
+                return new BadRequestObjectResult(ResponseTemplate.UnmappedRlpErrorResponse(errResp));
             }
             catch (JsonException)
             {
-                return new ObjectResult(ApiResponse.InternalErrorResponse()) { StatusCode = 500 };
+                return new ObjectResult(ResponseTemplate.InternalErrorResponse()) { StatusCode = 500 };
             }
         }
     }

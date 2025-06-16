@@ -23,14 +23,14 @@ namespace RWS_LBE_Transaction.Controllers
             var pageString = Request.Query["page"];
             if (!int.TryParse(pageString, out var page) || page < 1)
             {
-                return BadRequest(ApiResponse.InvalidQueryParametersErrorResponse());
+                return BadRequest(ResponseTemplate.InvalidQueryParametersErrorResponse());
             }
  
             try
             {
                 var response = await _rlp.GetAllCampaigns(page);
 
-                return Ok(ApiResponse.GenericSuccessResponse(response));
+                return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (ExternalApiException ex)
             {
@@ -39,7 +39,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Get all campaigns error");
-                return StatusCode(500, ApiResponse.InternalErrorResponse());
+                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
             }
 
         }
