@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using RWS_LBE_Transaction.Data;
+using RWS_LBE_Transaction.DTOs.Configurations;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services;
 using RWS_LBE_Transaction.Services.Authentication;
+using RWS_LBE_Transaction.Services.Implementations;
+using RWS_LBE_Transaction.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,13 +22,20 @@ builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Bind external API configurations
+builder.Services.Configure<ExternalApiConfig>(
+    builder.Configuration.GetSection("ExternalApiConfig")
+);
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRlpService, RlpService>();
 
 // Add http client helper implementation
 builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
 });
+
 var app = builder.Build();
 
 // Log incoming requests

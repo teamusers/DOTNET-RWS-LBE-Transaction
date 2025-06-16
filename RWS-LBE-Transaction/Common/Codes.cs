@@ -38,6 +38,10 @@
         public const int GR_MEMBER_LINKED = 4012;
         public const int GR_MEMBER_NOT_FOUND = 4013;
         public const int INVALID_GR_MEMBER_CLASS = 4014;
+        public const int ACTIVE_CAMPAIGN_NOT_FOUND = 4015;
+        public const int PASSWORD_COMPLEXITY_INVALID = 4016;
+        public const int CIAM_UNMAPPED_ERROR = 4017;
+        public const int RLP_UNMAPPED_ERROR = 4018;
 
         /// <summary>
         /// Validates whether the provided type is one of the known SignUpType constants.

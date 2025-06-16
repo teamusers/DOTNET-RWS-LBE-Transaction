@@ -1,5 +1,4 @@
-﻿ 
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Transaction.Common
 {
@@ -26,6 +25,9 @@ namespace RWS_LBE_Transaction.Common
     {
         public static ApiResponse<object> DefaultResponse(long code, string message) =>
             new ApiResponse<object> { Code = code, Message = message, Data = null };
+
+        public static ApiResponse<object>? GenericSuccessResponse(object? data) =>
+            new ApiResponse<object> { Code = Codes.SUCCESSFUL, Message = "successful", Data = data };
 
         public static ApiResponse<object> InternalErrorResponse() =>
             DefaultResponse(Codes.INTERNAL_ERROR, "internal error");
@@ -68,5 +70,8 @@ namespace RWS_LBE_Transaction.Common
 
         public static ApiResponse<object> CachedProfileNotFoundErrorResponse() =>
             DefaultResponse(Codes.CACHED_PROFILE_NOT_FOUND, "cached profile not found");
+
+        public static ApiResponse<object>? UnmappedRlpErrorResponse(object? rlpResponse) =>
+            new ApiResponse<object> { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse};
     }
 }

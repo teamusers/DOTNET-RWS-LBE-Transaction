@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Transaction.Common;
-using RWS_LBE_Transaction.DTOs.Requests;
-using RWS_LBE_Transaction.Helpers;
-using RWS_LBE_Transaction.Services;
+using RWS_LBE_Transaction.Exceptions;
+using RWS_LBE_Transaction.Services.Interfaces;
 
 namespace RWS_LBE_Transaction.Controllers
 {
@@ -11,54 +10,36 @@ namespace RWS_LBE_Transaction.Controllers
     public class CampaignController : ControllerBase
     {
         private readonly ILogger<CampaignController> _logger;
-        private readonly IApiHttpClient _apiHttpClient;
-        public CampaignController(IApiHttpClient apiHttpClient, ILogger<CampaignController> logger)
+        private readonly IRlpService _rlp;
+        public CampaignController(ILogger<CampaignController> logger, IRlpService rlpService)
         {
-            _apiHttpClient = apiHttpClient;
             _logger = logger;
+            _rlp = rlpService;
         }
 
-        //TODO: remove after testing
-        [HttpPost("test")]
-        public async Task<IActionResult> TestEndpoint([FromBody] CampaignTestRequest req)
+        [HttpGet]
+        public async Task<IActionResult> GetAllCampaigns()
         {
+            var pageString = Request.Query["page"];
+            if (!int.TryParse(pageString, out var page) || page < 1)
+            {
+                return BadRequest(ApiResponse.InvalidQueryParametersErrorResponse());
+            }
+ 
             try
             {
-                var (result, raw) = await _apiHttpClient.DoApiRequestAsync<object>(new ApiRequestOptions
-                {
-                    Method = HttpMethod.Post,
-                    Url = req.HostName,
-                    ExpectedStatus = 200 
-                });
+                var response = await _rlp.GetAllCampaigns(page);
 
-                return Ok(new ApiResponse<object>
-                {
-                    Code = Codes.SUCCESSFUL,
-                    Message = "API call successful",
-                    Data = result
-                });
+                return Ok(ApiResponse.GenericSuccessResponse(response));
             }
-            catch (HttpRequestException ex)
+            catch (ExternalApiException ex)
             {
-                _logger.LogError(ex, "API call failed due to unexpected status or other HTTP error");
-
-                return StatusCode(StatusCodes.Status502BadGateway, new ApiResponse<object>
-                {
-                    Code = Codes.INTERNAL_ERROR,
-                    Message = "error",
-                    Data = $"API call failed: {ex.Message}"
-                });
+                return RlpApiErrors.Handle(ex.RawResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error during API call");
-
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<object>
-                {
-                    Code = Codes.INTERNAL_ERROR,
-                    Message = "error",
-                    Data = $"API call failed: {ex.Message}"
-                });
+                _logger.LogError(ex, "Get all campaigns error");
+                return StatusCode(500, ApiResponse.InternalErrorResponse());
             }
 
         }
