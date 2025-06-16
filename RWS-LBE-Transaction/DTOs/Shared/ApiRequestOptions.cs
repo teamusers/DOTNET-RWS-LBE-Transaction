@@ -1,4 +1,6 @@
-namespace RWS_LBE_Transaction.Services
+using System.Net;
+
+namespace RWS_LBE_Transaction.DTOs.Shared
 {
     public class ApiRequestOptions
     {
@@ -9,6 +11,6 @@ namespace RWS_LBE_Transaction.Services
         public string? BearerToken { get; set; }
         public (string Username, string Password)? BasicAuth { get; set; }
         public Dictionary<string, string>? Headers { get; set; }
-        public int ExpectedStatus { get; set; } = 200;
+        public HttpStatusCode ExpectedStatus { get; set; } = HttpStatusCode.OK;
     }
 }

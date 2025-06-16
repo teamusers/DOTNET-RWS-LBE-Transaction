@@ -1,10 +1,17 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using RWS_LBE_Transaction.Services;
+using RWS_LBE_Transaction.DTOs.Shared;
+using RWS_LBE_Transaction.Exceptions;
 
 namespace RWS_LBE_Transaction.Helpers
 {
+    public interface IApiHttpClient
+    {
+        Task<T?> DoApiRequestAsync<T>(ApiRequestOptions opts);
+
+    }
+    
     public class ApiHttpClient : IApiHttpClient
     {
         private readonly HttpClient _httpClient;
@@ -22,7 +29,7 @@ namespace RWS_LBE_Transaction.Helpers
             };
         }
 
-        public async Task<(T? Result, string RawResponse)> DoApiRequestAsync<T>(ApiRequestOptions opts)
+        public async Task<T?> DoApiRequestAsync<T>(ApiRequestOptions opts)
         {
             using var request = new HttpRequestMessage(opts.Method, opts.Url);
 
@@ -40,11 +47,7 @@ namespace RWS_LBE_Transaction.Helpers
                 }
             }
 
-            if (!string.IsNullOrEmpty(opts.BearerToken) && opts.BasicAuth.HasValue)
-            {
-                throw new InvalidOperationException("Cannot use both Bearer token and Basic Auth");
-            }
-
+            // bearer token takes priority
             if (!string.IsNullOrEmpty(opts.BearerToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", opts.BearerToken);
@@ -76,14 +79,14 @@ namespace RWS_LBE_Transaction.Helpers
             _logger.LogInformation("API RESPONSE: Status: {StatusCode}; Body: {Body}",
                 (int)response.StatusCode, sanitized);
 
-            if ((int)response.StatusCode != opts.ExpectedStatus)
+            if (response.StatusCode != opts.ExpectedStatus)
             {
-                throw new HttpRequestException($"Unexpected status {(int)response.StatusCode}: {rawResponse}");
+                throw new ExternalApiException("Unexpected HTTP response status code received", response.StatusCode, rawResponse);
             }
 
             if (string.IsNullOrWhiteSpace(rawResponse))
             {
-                return (default, rawResponse);
+                return default;
             }
 
             T? result;
@@ -91,13 +94,12 @@ namespace RWS_LBE_Transaction.Helpers
             {
                 result = JsonSerializer.Deserialize<T>(rawResponse, _jsonOptions);
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
-                _logger.LogError(ex, "Failed to deserialize API response: {RawResponse}", rawResponse);
-                throw;
+                throw new ExternalApiException("API response deserialization failed.", response.StatusCode, rawResponse);
             }
 
-            return (result, rawResponse);
+            return result;
         }
     }
 }
