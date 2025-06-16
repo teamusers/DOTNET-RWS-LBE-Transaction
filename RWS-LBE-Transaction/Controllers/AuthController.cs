@@ -34,67 +34,36 @@ namespace RWS_LBE_Transaction.Controllers
         {
             // 1) Require AppID header
             if (string.IsNullOrWhiteSpace(appId))
-                return Unauthorized(
-                    new ApiResponse
-                    {
-                        Code = Codes.MISSING_APP_ID,
-                        Message = "AppID header is missing"
-                    });
+                return Unauthorized(ResponseTemplate.MissingAppIdErrorResponse());
 
             // 2) Validate JSON body
             if (!ModelState.IsValid)
-                return BadRequest(
-                    new ApiResponse
-                    {
-                        Code = Codes.INVALID_REQUEST_BODY,
-                        Message = "Malformed JSON in request body"
-                    });
+                return BadRequest(ResponseTemplate.InvalidRequestBodyErrorResponse());
 
             // 3) Look up secret key
-            var channel = await _db.SysChannel
-                                   .SingleOrDefaultAsync(c => c.AppId == appId);
+            var channel = await _db.SysChannel.SingleOrDefaultAsync(c => c.AppId == appId);
             if (channel == null)
-                return Unauthorized(
-                    new ApiResponse
-                    {
-                        Code = Codes.INVALID_APP_ID,
-                        Message = "AppID not recognized or unauthorized"
-                    });
+                return Unauthorized(ResponseTemplate.InvalidAppIdErrorResponse());
+
             var secretKey = channel.AppKey;
 
             if (string.IsNullOrWhiteSpace(req.Nonce) || string.IsNullOrWhiteSpace(req.Timestamp))
-            {
-                return BadRequest(
-                    ResponseTemplate.InvalidRequestBodyErrorResponse()
-                );
-            }
+                return BadRequest(ResponseTemplate.InvalidRequestBodyErrorResponse());
 
             // 4) Compute our own signature
-            var computed = _authService
-                .GenerateSignatureWithParams(appId, req.Nonce, req.Timestamp, secretKey!);
+            var computed = _authService.GenerateSignatureWithParams(appId, req.Nonce, req.Timestamp, secretKey!);
 
             // 5) Compare signatures
             if (computed.Signature != req.Signature)
-                return Unauthorized(
-                    new ApiResponse
-                    {
-                        Code = Codes.INVALID_SIGNATURE,
-                        Message = "HMAC signature mismatch"
-                    });
+                return Unauthorized(ResponseTemplate.InvalidSignatureErrorResponse());
 
             // 6) Generate JWT
             var token = TokenInterceptor.GenerateToken(appId);
 
             // 7) Return wrapped response
-            var resp = new ApiResponse
-            {
-                Code = Codes.SUCCESSFUL,
-                Message = "Token successfully generated",
-                Data = new AuthResponseData
-                {
-                    AccessToken = token
-                }
-            };
+            var responseData = new AuthResponseData { AccessToken = token };
+            var resp = ResponseTemplate.GenericSuccessResponse(responseData);
+
             return Ok(resp);
         }
 
@@ -102,11 +71,6 @@ namespace RWS_LBE_Transaction.Controllers
         /// Fallback for missing query parameters
         /// </summary>
         [HttpGet("invalid-query")]
-        public IActionResult InvalidQuery()
-            => BadRequest(new ApiResponse
-            {
-                Code = Codes.INVALID_QUERY_PARAMETERS,
-                Message = "Invalid query parameters"
-            });
+        public IActionResult InvalidQuery() => BadRequest(ResponseTemplate.InvalidQueryParametersErrorResponse());
     }
 }
