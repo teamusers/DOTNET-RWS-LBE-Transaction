@@ -63,5 +63,21 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Body = payload
             });
         }
+
+        public async Task<UserTransactionResponse?> ViewTransaction(string externalId)
+        {
+                var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                    _config,
+                    RlpApiEndpoints.ViewTransaction,
+                    externalId,
+                    null);
+
+                return await _apiHttpClient.DoApiRequestAsync<UserTransactionResponse>(new DTOs.Shared.ApiRequestOptions
+                {
+                    Url = url,
+                    BasicAuth = basicAuth
+                });
+        }
+
     }
 }
