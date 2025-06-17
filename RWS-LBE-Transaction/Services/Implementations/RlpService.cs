@@ -23,7 +23,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
         public async Task<GetAllCampaignsResponse?> GetAllCampaigns(int page)
         {
             string query = $"{RlpApiQueries.CampaignsQuery}&page={page}";
-            var (basicAuth, url) = BuildRlpCoreRequestInfo(RlpApiEndpoints.GetAllCampaigns, null, query);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(_config, RlpApiEndpoints.GetAllCampaigns, null, query);
 
             return await _apiHttpClient.DoApiRequestAsync<GetAllCampaignsResponse>(new DTOs.Shared.ApiRequestOptions
             {
@@ -34,7 +34,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
 
         public async Task<GetCampaignsByIdResponse?> GetCampaignsById(string externalId)
         {
-            var (basicAuth, url) = BuildRlpCoreRequestInfo(RlpApiEndpoints.GetCampaignsById, externalId, null);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(_config, RlpApiEndpoints.GetCampaignsById, externalId, null);
 
             return await _apiHttpClient.DoApiRequestAsync<GetCampaignsByIdResponse>(new DTOs.Shared.ApiRequestOptions
             {
@@ -53,7 +53,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Take = 1000
             };
 
-            var (basicAuth, url) = BuildRlpOffersRequestInfo(RlpApiEndpoints.FetchOffersDetails, null, null);
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.FetchOffersDetails, null, null);
 
             return await _apiHttpClient.DoApiRequestAsync<FetchOffersDetailsResponse>(new DTOs.Shared.ApiRequestOptions
             {
@@ -62,40 +62,6 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Method = HttpMethod.Post,
                 Body = payload
             });
-        }
-
-        public ((string Username, string Password) BasicAuth, string Url) BuildRlpCoreRequestInfo(string basePath, string? externalId, string? queryParams)
-        {
-            string username = _config.Core!.ApiKey;
-            string password = _config.Core!.ApiSecret;
-
-            string url = BuildRlpUrl(_config.Core!.Host, _config.Core!.ApiKey, basePath, externalId, queryParams);
-
-            return ((username, password), url);
-        }
-
-        public ((string Username, string Password) BasicAuth, string Url) BuildRlpOffersRequestInfo(string basePath, string? externalId, string? queryParams)
-        {
-            string username = _config.Offers!.ApiKey;
-            string password = _config.Offers!.ApiSecret;
-
-            string url = BuildRlpUrl(_config.Offers!.Host, _config.Offers!.ApiKey, basePath, externalId, queryParams);
-
-            return ((username, password), url);
-        }
-
-        public static string BuildRlpUrl(string host, string apiKey, string basePath, string? externalId, string? queryParams)
-        {
-            var endpoint = basePath
-                .Replace(":api_key", apiKey)
-                .Replace(":external_id", externalId);
-
-            if (!string.IsNullOrWhiteSpace(queryParams))
-            {
-                endpoint = $"{endpoint}?{queryParams}";
-            }
-
-            return $"{host}{endpoint}";
         }
     }
 }
