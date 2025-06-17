@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Responses;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
+using RWS_LBE_Transaction.DTOs.RLP.Shared;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
 
@@ -65,7 +66,7 @@ namespace RWS_LBE_Transaction.Controllers
             }
 
             var offerIdList = RlpHelper.ExtractOfferIDsFromJsonElement(campaignsResponse.Campaigns);
-            OfferDetails[]? offerDetailsList = [];
+            Offer[]? offerDetailsList = [];
 
             if (offerIdList.Count != 0)
             {
