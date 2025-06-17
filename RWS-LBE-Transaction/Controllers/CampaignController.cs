@@ -66,7 +66,7 @@ namespace RWS_LBE_Transaction.Controllers
             }
 
             var offerIdList = RlpHelper.ExtractOfferIDsFromJsonElement(campaignsResponse.Campaigns);
-            Offer[]? offerDetailsList = [];
+            List<Offer>? offerDetailsList = [];
 
             if (offerIdList.Count != 0)
             {

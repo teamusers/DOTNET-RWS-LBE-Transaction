@@ -10,6 +10,6 @@ namespace RWS_LBE_Transaction.DTOs.Responses
         public JsonElement Campaigns { get; set; }
 
         [JsonPropertyName("offers")]
-        public Offer[] Offers { get; set; } = [];
+        public List<Offer> Offers { get; set; } = [];
     }
 }

@@ -5,10 +5,10 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Shared
     public class RlpCampaignList
     {
         [JsonPropertyName("tiles")]
-        public Campaign[]? Tiles { get; set; }
+        public List<Campaign>? Tiles { get; set; }
 
         [JsonPropertyName("promotions")]
-        public Campaign[]? Promotions { get; set; }
+        public List<Campaign>? Promotions { get; set; }
 
     }
 

@@ -12,6 +12,6 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
     public class OfferDetailsPayload
     {
         [JsonPropertyName("results")]
-        public Offer[]? Results { get; set; }
+        public List<Offer>? Results { get; set; }
     }
 }
