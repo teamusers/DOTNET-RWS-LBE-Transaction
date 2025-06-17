@@ -79,5 +79,9 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 });
         }
 
+        public void RevokeOffer(object payload)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
