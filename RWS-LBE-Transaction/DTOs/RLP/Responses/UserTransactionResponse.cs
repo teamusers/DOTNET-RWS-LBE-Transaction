@@ -129,7 +129,7 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
         public DateTime OpenTime { get; set; }
 
         [JsonPropertyName("payments")]
-        public List<TransactionPayment> Payments { get; set; } = new();
+        public List<TransactionPaymentDTO> Payments { get; set; } = new();
 
         [JsonPropertyName("pos_employee_id")]
         public string PosEmployeeId { get; set; } = string.Empty;
@@ -229,57 +229,6 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
-    }
-
-    public class TransactionPayment
-    {
-        [JsonPropertyName("additional_user_id")]
-        public string? AdditionalUserId { get; set; }
-
-        [JsonPropertyName("additional_user_id_type")]
-        public string? AdditionalUserIdType { get; set; }
-
-        [JsonPropertyName("amount")]
-        public decimal Amount { get; set; }
-
-        [JsonPropertyName("create_date")]
-        public DateTime CreateDate { get; set; }
-
-        [JsonPropertyName("custom_data")]
-        public object? CustomData { get; set; }
-
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("last_updated")]
-        public DateTime LastUpdated { get; set; }
-
-        [JsonPropertyName("payment_id")]
-        public string PaymentId { get; set; } = string.Empty;
-
-        [JsonPropertyName("payment_time")]
-        public DateTime PaymentTime { get; set; }
-
-        [JsonPropertyName("receipt_code")]
-        public string ReceiptCode { get; set; } = string.Empty;
-
-        [JsonPropertyName("retailer_id")]
-        public string RetailerId { get; set; } = string.Empty;
-
-        [JsonPropertyName("store_id")]
-        public string StoreId { get; set; } = string.Empty;
-
-        [JsonPropertyName("transaction_id")]
-        public string TransactionId { get; set; } = string.Empty;
-
-        [JsonPropertyName("type")]
-        public string Type { get; set; } = string.Empty;
-
-        [JsonPropertyName("user_id")]
-        public string UserId { get; set; } = string.Empty;
-
-        [JsonPropertyName("user_id_type")]
-        public string UserIdType { get; set; } = string.Empty;
     }
 
     public class EventType

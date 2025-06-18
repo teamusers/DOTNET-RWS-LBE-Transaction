@@ -5,6 +5,7 @@ using RWS_LBE_Transaction.DTOs.RLP.Requests;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
+using System.Net.Http;
 
 namespace RWS_LBE_Transaction.Services.Implementations
 {
@@ -76,6 +77,22 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 {
                     Url = url,
                     BasicAuth = basicAuth
+                });
+        }
+        public async Task<StoreTransactionsResponse?> ViewStoreTransactionAsync(object payload)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewStoreTransaction,
+                null,
+                null);
+
+            return await _apiHttpClient.DoApiRequestAsync<StoreTransactionsResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
                 });
         }
 

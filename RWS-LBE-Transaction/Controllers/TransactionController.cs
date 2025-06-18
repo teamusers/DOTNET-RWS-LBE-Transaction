@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Transaction.Services.Interfaces;
 using RWS_LBE_Transaction.Common;
+using RWS_LBE_Transaction.DTOs;
+using RWS_LBE_Transaction.DTOs.RLP.Responses;
 
 namespace RWS_LBE_Transaction.Controllers
 {
@@ -30,6 +32,21 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all user transaction.");
+                return RlpApiErrors.Handle(ex);
+            }
+        }
+
+        [HttpPost("store")]
+        public async Task<IActionResult> GetStoreTransaction([FromBody] object payload)
+        {
+            try
+            {
+                var result = await _rlpService.ViewStoreTransactionAsync(payload);
+                return Ok(ResponseTemplate.GenericSuccessResponse(result));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all store transactions.");
                 return RlpApiErrors.Handle(ex);
             }
         }
