@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.Data;
-using RWS_LBE_Transaction.DTOs.Requests;
-using RWS_LBE_Transaction.DTOs.Responses; 
-using RWS_LBE_Transaction.Services.Authentication;
+using RWS_LBE_Transaction.DTOs.Auth.Requests;
+using RWS_LBE_Transaction.DTOs.Auth.Responses;
+using RWS_LBE_Transaction.Services.Interfaces;
 using RWS_LBE_Transaction.Services;
 
 namespace RWS_LBE_Transaction.Controllers

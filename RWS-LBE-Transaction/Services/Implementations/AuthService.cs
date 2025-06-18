@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using RWS_LBE_Transaction.DTOs.Requests;
+using RWS_LBE_Transaction.DTOs.Auth.Requests;
+using RWS_LBE_Transaction.Services.Interfaces;
 
-namespace RWS_LBE_Transaction.Services.Authentication
+namespace RWS_LBE_Transaction.Services.Implementations
 {
-    public interface IAuthService
-    {
-        AuthRequest GenerateSignature(string appId, string secretKey);
-        AuthRequest GenerateSignatureWithParams(
-            string appId,
-            string nonce,
-            string timestamp,
-            string secretKey);
-    }
-
     public class AuthService : IAuthService
     {
         private static readonly string _chars =
