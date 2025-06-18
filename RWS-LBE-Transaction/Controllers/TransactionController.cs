@@ -29,7 +29,7 @@ namespace RWS_LBE_Transaction.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all campaigns.");
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all user transaction.");
                 return RlpApiErrors.Handle(ex);
             }
         }
