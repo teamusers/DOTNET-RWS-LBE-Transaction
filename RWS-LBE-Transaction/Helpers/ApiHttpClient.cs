@@ -11,7 +11,7 @@ namespace RWS_LBE_Transaction.Helpers
         Task<T?> DoApiRequestAsync<T>(ApiRequestOptions opts);
 
     }
-    
+
     public class ApiHttpClient : IApiHttpClient
     {
         private readonly HttpClient _httpClient;
@@ -67,8 +67,16 @@ namespace RWS_LBE_Transaction.Helpers
                 }
             }
 
-            _logger.LogInformation("[API REQUEST] {Method} {Url}; Content-Type: {ContentType}; Body: {Body}",
-                opts.Method, opts.Url, opts.ContentType, opts.Body == null ? "<empty>" : JsonSerializer.Serialize(opts.Body, _jsonOptions));
+            var headersLog = opts.Headers != null
+                ? string.Join(", ", opts.Headers.Select(h => $"{h.Key}: {h.Value}"))
+                : "<none>";
+
+            _logger.LogInformation("[API REQUEST] {Method} {Url}; Content-Type: {ContentType}; Body: {Body}; Headers: {Headers}",
+                opts.Method,
+                opts.Url,
+                opts.ContentType,
+                opts.Body == null ? "<empty>" : JsonSerializer.Serialize(opts.Body, _jsonOptions),
+                headersLog);
 
             using var response = await _httpClient.SendAsync(request); // no cancellation token
 

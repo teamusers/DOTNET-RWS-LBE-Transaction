@@ -28,6 +28,7 @@ builder.Services.Configure<ExternalApiConfig>(
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRlpService, RlpService>();
+builder.Services.AddScoped<IVmsService, VmsService>();
 
 // Add http client helper implementation
 builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
