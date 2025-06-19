@@ -21,5 +21,9 @@ namespace RWS_LBE_Transaction.Services.Interfaces
         Task<UserPointResponse?> ViewPoint(string externalId);
 
         Task<SendTransactionResponse?> SendTransactionAsync(SendTransactionRWS payload);
+
+        Task<UserBalanceResponse?> ViewAllBalancesAsync(string externalId, ViewBalanceRWS payload);
+
+        Task<SpendResponse?> SpendMultipleTransactionsAsync(SpendRequest payload);
     }
 }

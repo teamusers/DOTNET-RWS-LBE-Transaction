@@ -14,6 +14,8 @@ namespace RWS_LBE_Transaction.Common
         public const string ViewStoreTransaction = "/transactions/api/1.0/transactions/info/get_store_transactions";
         public const string ViewPoint = "/priv/v1/apps/:api_key/external/users/:external_id";
         public const string SendTransaction = "/api/2.0/send_transaction";
+        public const string ViewAllBalances = "/incentives/api/1.0/user_points/all_balances";
+        public const string SpendMultipleTransactions = "/incentives/api/1.0/user_points/spend_multiple";
     }
 
     public class RlpApiQueries

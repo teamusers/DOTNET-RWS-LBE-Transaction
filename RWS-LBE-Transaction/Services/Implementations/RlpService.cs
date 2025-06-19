@@ -135,5 +135,39 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Body = payload
             });
         }
+
+        public async Task<UserBalanceResponse?> ViewAllBalancesAsync(string externalId, ViewBalanceRWS payload)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewAllBalances,
+                externalId,
+                null);
+
+            return await _apiHttpClient.DoApiRequestAsync<UserBalanceResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
+        public async Task<SpendResponse?> SpendMultipleTransactionsAsync(SpendRequest payload)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
+                _config,
+                RlpApiEndpoints.SpendMultipleTransactions,
+                null,
+                null);
+
+            return await _apiHttpClient.DoApiRequestAsync<SpendResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
     }
 }

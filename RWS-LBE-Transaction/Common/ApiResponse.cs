@@ -75,6 +75,9 @@ namespace RWS_LBE_Transaction.Common
         public static ApiResponse ActiveCampaignNotFoundErrorResponse() =>
             DefaultResponse(Codes.ACTIVE_CAMPAIGN_NOT_FOUND, "active campaign not found");
 
+        public static ApiResponse UnsuccessfulUpdate() =>
+            DefaultResponse(Codes.UNSUCCESSFUL, "unsuccessful update");
+
         public static ApiResponse? UnmappedRlpErrorResponse(object? rlpResponse) =>
             new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse };
     }
