@@ -19,5 +19,7 @@ namespace RWS_LBE_Transaction.Services.Interfaces
         Task<StoreTransactionsResponse> ViewStoreTransactionAsync(object payload);
 
         Task<UserPointResponse?> ViewPoint(string externalId);
+
+        Task<SendTransactionResponse?> SendTransactionAsync(SendTransactionRWS payload);
     }
 }

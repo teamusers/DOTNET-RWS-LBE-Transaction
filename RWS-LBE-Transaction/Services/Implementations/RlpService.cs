@@ -118,5 +118,22 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 BasicAuth = basicAuth
             });
         }
+
+        public async Task<SendTransactionResponse?> SendTransactionAsync(SendTransactionRWS payload)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpTransactionRequestInfo(
+                _config,
+                RlpApiEndpoints.SendTransaction,
+                null,
+                null);
+
+            return await _apiHttpClient.DoApiRequestAsync<SendTransactionResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
     }
 }
