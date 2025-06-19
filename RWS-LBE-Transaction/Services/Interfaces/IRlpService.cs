@@ -14,7 +14,7 @@ namespace RWS_LBE_Transaction.Services.Interfaces
         void RevokeOffer(object payload);
 
         // Transactions
-        Task<UserTransactionResponse?> ViewTransaction(string externalId);
+        Task<UserTransactionResponse?> ViewTransaction(string externalId, string? event_types = null);
 
         Task<StoreTransactionsResponse> ViewStoreTransactionAsync(object payload);
 

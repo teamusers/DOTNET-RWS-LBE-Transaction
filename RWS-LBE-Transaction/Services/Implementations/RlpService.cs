@@ -66,19 +66,25 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<UserTransactionResponse?> ViewTransaction(string externalId)
+        public async Task<UserTransactionResponse?> ViewTransaction(string externalId, string? event_types = null)
         {
-                var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
-                    _config,
-                    RlpApiEndpoints.ViewTransaction,
-                    externalId,
-                    null);
+            string? query = null;
+            if (!string.IsNullOrEmpty(event_types))
+            {
+                query = $"event_types={event_types}";
+            }
 
-                return await _apiHttpClient.DoApiRequestAsync<UserTransactionResponse>(new DTOs.Shared.ApiRequestOptions
-                {
-                    Url = url,
-                    BasicAuth = basicAuth
-                });
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewTransaction,
+                externalId,
+                query);
+
+            return await _apiHttpClient.DoApiRequestAsync<UserTransactionResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth
+            });
         }
 
         public async Task<StoreTransactionsResponse?> ViewStoreTransactionAsync(object payload)

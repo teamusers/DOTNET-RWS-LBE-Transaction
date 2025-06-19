@@ -150,23 +150,35 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 
     public class TransactionPaymentDTO
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        [JsonPropertyName("additional_user_id")]
+        public string? AdditionalUserId { get; set; }
 
-        [JsonPropertyName("transaction_id")]
-        public string? TransactionId { get; set; }
-
-        [JsonPropertyName("payment_id")]
-        public string? PaymentId { get; set; }
-
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
+        [JsonPropertyName("additional_user_id_type")]
+        public string? AdditionalUserIdType { get; set; }
 
         [JsonPropertyName("amount")]
         public decimal Amount { get; set; }
 
+        [JsonPropertyName("create_date")]
+        public DateTime CreateDate { get; set; }
+
+        [JsonPropertyName("custom_data")]
+        public object? CustomData { get; set; }
+
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("last_updated")]
+        public DateTime LastUpdated { get; set; }
+
+        [JsonPropertyName("payment_id")]
+        public string? PaymentId { get; set; }
+
         [JsonPropertyName("payment_time")]
-        public string? PaymentTime { get; set; }
+        public DateTime PaymentTime { get; set; }
+
+        [JsonPropertyName("receipt_code")]
+        public string? ReceiptCode { get; set; }
 
         [JsonPropertyName("retailer_id")]
         public string? RetailerId { get; set; }
@@ -174,8 +186,17 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
         [JsonPropertyName("store_id")]
         public string? StoreId { get; set; }
 
+        [JsonPropertyName("transaction_id")]
+        public string? TransactionId { get; set; }
+
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
         [JsonPropertyName("user_id")]
         public string? UserId { get; set; }
+
+        [JsonPropertyName("user_id_type")]
+        public string? UserIdType { get; set; }
     }
 
     public class TransactionDiscountDTO

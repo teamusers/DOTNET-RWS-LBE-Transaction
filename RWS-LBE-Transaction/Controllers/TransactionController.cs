@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using RWS_LBE_Transaction.DTOs.Configurations;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace RWS_LBE_Transaction.Controllers
 {
@@ -35,11 +36,11 @@ namespace RWS_LBE_Transaction.Controllers
         }
 
         [HttpGet("user/{externalId}")]
-        public async Task<IActionResult> GetTransaction(string externalId)
+        public async Task<IActionResult> GetTransaction(string externalId, [FromQuery] string? event_types = null)
         {
             try
             {
-                var transaction = await _rlpService.ViewTransaction(externalId);
+                var transaction = await _rlpService.ViewTransaction(externalId, event_types);
                 return Ok(ResponseTemplate.GenericSuccessResponse(transaction));
             }
             catch (Exception ex)
