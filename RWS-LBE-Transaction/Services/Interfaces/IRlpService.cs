@@ -15,10 +15,13 @@ namespace RWS_LBE_Transaction.Services.Interfaces
 
         // Transactions
         Task<UserTransactionResponse?> ViewTransaction(string externalId, string? event_types = null);
+        Task<string?> ViewTransactionRaw(string externalId, string? event_types = null);
 
-        Task<StoreTransactionsResponse> ViewStoreTransactionAsync(object payload);
+        Task<StoreTransactionsResponse?> ViewStoreTransaction(object payload);
+        Task<string?> ViewStoreTransactionRaw(object payload);
 
         Task<UserPointResponse?> ViewPoint(string externalId);
+        Task<string?> ViewPointRaw(string externalId);
 
         Task<SendTransactionResponse?> SendTransactionAsync(SendTransactionRWS payload);
 

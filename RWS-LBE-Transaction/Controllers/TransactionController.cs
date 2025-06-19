@@ -40,8 +40,14 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var transaction = await _rlpService.ViewTransaction(externalId, event_types);
-                return Ok(ResponseTemplate.GenericSuccessResponse(transaction));
+                var rawResponse = await _rlpService.ViewTransactionRaw(externalId, event_types);
+                if (string.IsNullOrEmpty(rawResponse))
+                {
+                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                }
+                var jsonDocument = JsonDocument.Parse(rawResponse);
+                var data = jsonDocument.RootElement;
+                return Ok(ResponseTemplate.GenericSuccessResponse(data));
             }
             catch (Exception ex)
             {
@@ -55,8 +61,19 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var result = await _rlpService.ViewStoreTransactionAsync(payload);
-                return Ok(ResponseTemplate.GenericSuccessResponse(result));
+                var rawResponse = await _rlpService.ViewStoreTransactionRaw(payload);
+                
+                if (string.IsNullOrEmpty(rawResponse))
+                {
+                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                }
+
+                // Parse the raw JSON to get the actual data
+                var jsonDocument = JsonDocument.Parse(rawResponse);
+                var data = jsonDocument.RootElement;
+
+                // Wrap with our response template
+                return Ok(ResponseTemplate.GenericSuccessResponse(data));
             }
             catch (Exception ex)
             {
@@ -70,8 +87,14 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var response = await _rlpService.ViewPoint(externalId);
-                return Ok(ResponseTemplate.GenericSuccessResponse(response));
+                var rawResponse = await _rlpService.ViewPointRaw(externalId);
+                if (string.IsNullOrEmpty(rawResponse))
+                {
+                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                }
+                var jsonDocument = JsonDocument.Parse(rawResponse);
+                var data = jsonDocument.RootElement;
+                return Ok(ResponseTemplate.GenericSuccessResponse(data));
             }
             catch (Exception ex)
             {

@@ -12,7 +12,7 @@ namespace RWS_LBE_Transaction.Common
         public const string FetchOffersDetails = "/offers/api/2.0/offers/fetch_offers_details";
         public const string ViewTransaction = "/priv/v1/apps/:api_key/external/users/:external_id/timelines/END_USER_MEMBER_STATEMENT";
         public const string ViewStoreTransaction = "/transactions/api/1.0/transactions/info/get_store_transactions";
-        public const string ViewPoint = "/priv/v1/apps/:api_key/external/users/:external_id";
+        public const string ViewPoint = "/priv/v1/apps/:api_key/external/users/:external_id?user[user_profile]=true&expand_incentives=true&show_identifiers=true";
         public const string SendTransaction = "/api/2.0/send_transaction";
         public const string ViewAllBalances = "/incentives/api/1.0/user_points/all_balances";
         public const string SpendMultipleTransactions = "/incentives/api/1.0/user_points/spend_multiple";

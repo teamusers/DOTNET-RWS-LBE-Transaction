@@ -87,7 +87,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<StoreTransactionsResponse?> ViewStoreTransactionAsync(object payload)
+        public async Task<StoreTransactionsResponse?> ViewStoreTransaction(object payload)
         {
             var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
                 _config,
@@ -173,6 +173,62 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 BasicAuth = basicAuth,
                 Method = HttpMethod.Post,
                 Body = payload
+            });
+        }
+
+        public async Task<string?> ViewTransactionRaw(string externalId, string? event_types = null)
+        {
+            string? query = null;
+            if (!string.IsNullOrEmpty(event_types))
+            {
+                query = $"event_types={event_types}";
+            }
+
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewTransaction,
+                externalId,
+                query);
+
+            Console.WriteLine($"URL: {url}");
+            
+            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth
+            });
+        }
+
+        public async Task<string?> ViewStoreTransactionRaw(object payload)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewStoreTransaction,
+                null,
+                null);
+
+            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
+        public async Task<string?> ViewPointRaw(string externalId)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewPoint,
+                externalId,
+                "user[user_profile]=true&expand_incentives=true&show_identifiers=true");
+
+            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            {
+                Method = HttpMethod.Get,
+                Url = url,
+                BasicAuth = basicAuth
             });
         }
     }
