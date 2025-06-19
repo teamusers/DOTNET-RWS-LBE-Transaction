@@ -27,7 +27,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             _dbContext.TransactionIDRecords.Add(record);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            var transactionId = (999999999 + record.Id).ToString();
+            var transactionId = (1000000000 + record.Id).ToString();
 
             record.TransactionId = transactionId;
             record.UpdatedAt = DateTime.UtcNow;
