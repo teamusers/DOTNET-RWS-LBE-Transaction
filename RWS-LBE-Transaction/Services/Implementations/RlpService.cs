@@ -3,6 +3,7 @@ using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Configurations;
 using RWS_LBE_Transaction.DTOs.RLP.Requests;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
+using RWS_LBE_Transaction.DTOs.Shared;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
 using System.Net.Http;
@@ -79,6 +80,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
                     BasicAuth = basicAuth
                 });
         }
+
         public async Task<StoreTransactionsResponse?> ViewStoreTransactionAsync(object payload)
         {
             var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
@@ -93,12 +95,28 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 BasicAuth = basicAuth,
                 Method = HttpMethod.Post,
                 Body = payload
-                });
+            });
         }
 
         public void RevokeOffer(object payload)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<UserPointResponse?> ViewPoint(string externalId)
+        {
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewPoint,
+                externalId,
+                "user[user_profile]=true&expand_incentives=true&show_identifiers=true");
+
+            return await _apiHttpClient.DoApiRequestAsync<UserPointResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Method = HttpMethod.Get,
+                Url = url,
+                BasicAuth = basicAuth
+            });
         }
     }
 }

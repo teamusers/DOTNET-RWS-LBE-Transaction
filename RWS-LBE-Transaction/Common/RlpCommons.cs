@@ -5,13 +5,14 @@ using RWS_LBE_Transaction.Helpers;
 
 namespace RWS_LBE_Transaction.Common
 {
-    public class RlpApiEndpoints
+    public static class RlpApiEndpoints
     {
         public const string GetAllCampaigns = "/priv/v1/apps/:api_key/campaigns";
         public const string GetCampaignsById = "/priv/v1/apps/:api_key/external/users/:external_id/campaigns";
         public const string FetchOffersDetails = "/offers/api/2.0/offers/fetch_offers_details";
         public const string ViewTransaction = "/priv/v1/apps/:api_key/external/users/:external_id/timelines/END_USER_MEMBER_STATEMENT";
         public const string ViewStoreTransaction = "/transactions/api/1.0/transactions/info/get_store_transactions";
+        public const string ViewPoint = "/priv/v1/apps/:api_key/external/users/:external_id";
     }
 
     public class RlpApiQueries

@@ -50,5 +50,20 @@ namespace RWS_LBE_Transaction.Controllers
                 return RlpApiErrors.Handle(ex);
             }
         }
+
+        [HttpGet("point/{externalId}")]
+        public async Task<IActionResult> GetPoints(string externalId)
+        {
+            try
+            {
+                var response = await _rlpService.ViewPoint(externalId);
+                return Ok(ResponseTemplate.GenericSuccessResponse(response));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get user points.");
+                return RlpApiErrors.Handle(ex);
+            }
+        }
     }
 } 
