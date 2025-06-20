@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Transaction.DTOs.VMS.Shared
 {
-    public class VoucherType
+    public class VoucherTypeDT
     {
         [JsonPropertyName("VoucherTypeCode")]
         public string? VoucherTypeCode { get; set; }
@@ -11,7 +11,7 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Shared
         public string? VoucherTypeDescription { get; set; }
     }
 
-    public class VoucherIssuanceParam
+    public class VoucherIssuanceParamDT
     {
         public string? SystemTransactionID { get; set; }
         public string? TerminalCode { get; set; }
@@ -27,11 +27,37 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Shared
         public string? VoucherTypeCode { get; set; }
         public string? TransactionTypeCode { get; set; }
         public string? ItemCode { get; set; }
-        public string? ItemDecription { get; set; } //TODO Note: original key has a typo "Decription"
-        public string? CostCenter { get; set; }
+        public string? ItemDescription { get; set; }
+        public string? CostCentre { get; set; }
         public double GSTRate { get; set; }
         public double GSTAmount { get; set; }
         public string? MediaCode { get; set; }
         public string? ExtSysPromoCode { get; set; }
+    }
+
+    public class VoucherRequestParamDT
+    {
+        public bool IsBatchProcess { get; set; } = false;
+    }
+
+    public class VoucherIssuanceInfoDT
+    {
+        [JsonPropertyName("systemTransactionID")]
+        public string? SystemTransactionID { get; set; }
+
+        [JsonPropertyName("vmsTransactionID")]
+        public string? VmsTransactionID { get; set; }
+
+        [JsonPropertyName("voucherNo")]
+        public string? VoucherNo { get; set; }
+
+        [JsonPropertyName("voucherErrorCodeID")]
+        public int VoucherErrorCodeID { get; set; }
+
+        [JsonPropertyName("voucherErrorCodeDescription")]
+        public string? VoucherErrorCodeDescription { get; set; }
+
+        [JsonPropertyName("mediaCode")]
+        public string? MediaCode { get; set; }
     }
 }

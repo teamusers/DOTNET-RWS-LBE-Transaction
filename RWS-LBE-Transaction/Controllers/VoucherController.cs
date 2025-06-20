@@ -22,9 +22,12 @@ namespace RWS_LBE_Transaction.Controllers
         }
 
         [HttpPost("issue")]
-        public async Task<IActionResult> IssueVoucher([FromBody] IssueVoucherRequest req)
+        public async Task<IActionResult> SendVoucherIssuance([FromBody] SendVoucherIssuanceRequest req)
         {
-            List<VoucherType> voucherTypeList;
+            //TODO: add request body validator logic
+
+            VoucherIssuanceParamDT voucher = req.VoucherIssuanceParamDT;
+            List<VoucherTypeDT> voucherTypeList;
 
             try
             {
@@ -43,37 +46,110 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to get voucher types.");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return BadRequest(ResponseTemplate.VmsGetVoucherTypeCodesErrorResponse());
             }
 
-            return Ok(ResponseTemplate.GenericSuccessResponse(voucherTypeList));
+            // // Verify Voucher Type Code and Transaction Type Code
+            // RevokeOfferReason? revokeReason = null;
 
-            // // Verify Voucher Type
-
-            // //TODO: remove mock ------------------------------------------------------
-            // voucherTypeList = [
-            //     new VoucherType
-            //     {
-            //         VoucherTypeCode = "AT_ACW_SEA",
-            //         VoucherTypeDescription = "Attraction - ACW and SEAA Ticketing Counter"
-            //     },
-            //     new VoucherType
-            //     {
-            //         VoucherTypeCode = "AT_ALL",
-            //         VoucherTypeDescription = "Attraction - All"
-            //     }
-            // ];
-            // //TODO: remove mock ------------------------------------------------------
-
-            // if (!VmsHelper.ValidateVoucherType(voucherTypeList, req.VoucherIssuanceParamDT.VoucherTypeCode!) ||
-            //     !VmsHelper.ValidateTransactionType(req.VoucherIssuanceParamDT.TransactionTypeCode!))
+            // if (!VmsHelper.ValidateVoucherType(voucherTypeList, voucher.VoucherTypeCode!))
             // {
-            //     // revoke voucher
-
+            //     revokeReason = RlpRevokeOfferReasons.INVALID_VOUCHER_TYPE_CODE;
+            // }
+            // else if (!VmsHelper.ValidateTransactionType(voucher.TransactionTypeCode!))
+            // {
+            //     revokeReason = RlpRevokeOfferReasons.INVALID_TRANSACTION_TYPE_CODE;
             // }
 
+            // if (revokeReason != null)
+            // {
+            //     // revoke voucher
+            //     try
+            //     {
+            //         await _rlp.RevokeOffer(voucher.VoucherNo!, revokeReason.Description!);
+            //         return BadRequest(ResponseTemplate.SendVoucherIssuanceErrorResponse(revokeReason, null));
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to revoke voucher.");
+            //         return BadRequest(ResponseTemplate.InvalidVoucherIssuanceRevokeErrorResponse());
+            //     }
+            // }
 
-            // return Ok(ResponseTemplate.GenericSuccessResponse(null));
+            // // Generate new systemTransactionId
+
+            // voucher.SystemTransactionID = Guid.NewGuid().ToString();
+
+            // // Issue Voucher on VMS (Retry up to 3 Times if timeout)
+            // int retryCount = 0;
+            // const int maxRetries = 3;
+            // InterfaceResponseHeaderDT? interfaceResponseHeaderDT = null;
+
+            // while (true)
+            // {
+            //     try
+            //     {
+            //         var issueVoucherResponse = await _vms.IssueVoucher(voucher);
+            //         interfaceResponseHeaderDT = issueVoucherResponse?.InterfaceResponseHeaderDT;
+
+            //         // 3001 = Duplicate Voucher Number Error, assume voucher was successfully issued into VMS in previous timed out request
+            //         if (interfaceResponseHeaderDT?.FaultCodeID == 3001)
+            //         {
+            //             break;
+            //         }
+            //         else
+            //         {
+            //             revokeReason = RlpRevokeOfferReasons.VMS_ERROR;
+            //             break;
+            //         }
+            //     }
+            //     catch (TaskCanceledException)
+            //     {
+            //         if (retryCount >= maxRetries)
+            //         {
+            //             _logger.LogError("[API EXCEPTION] VMS: Voucher issuance for {VoucherNo} timed out. Retry count exceeded.", voucher.VoucherNo);
+            //             revokeReason = RlpRevokeOfferReasons.VMS_TIMEOUT;
+            //             break;
+            //         }
+
+            //         retryCount++;
+            //         _logger.LogInformation("[API RETRY] VMS: Request timed out when issuing voucher {VoucherNo}. Retry count: {RetryCount}", voucher.VoucherNo, retryCount);
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to issue voucher {VoucherNo}.", voucher.VoucherNo);
+            //         revokeReason = RlpRevokeOfferReasons.VMS_ERROR;
+            //         break;
+            //     }
+            // }
+
+            // if (revokeReason != null)
+            // {
+            //     // revoke voucher
+            //     try
+            //     {
+            //         await _rlp.RevokeOffer(voucher.VoucherNo!, revokeReason.Description!);
+            //         return BadRequest(ResponseTemplate.SendVoucherIssuanceErrorResponse(revokeReason, interfaceResponseHeaderDT));
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to revoke voucher.");
+            //         return BadRequest(ResponseTemplate.InvalidVoucherIssuanceRevokeErrorResponse());
+            //     }
+            // }
+
+            // // if no error, update offer in RLP
+            // try
+            // {
+            //     await _rlp.UpdateOffer(req.RlpId, voucher.VoucherNo!, voucher.SystemTransactionID);
+            // }
+            // catch (Exception ex)
+            // {
+            //     _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to update voucher in RLP after issuance.");
+            //     return BadRequest(ResponseTemplate.ValidVoucherIssuanceUpdateErrorResponse());
+            // }
+
+            return Ok(ResponseTemplate.GenericSuccessResponse(null));
         }
     }
 }

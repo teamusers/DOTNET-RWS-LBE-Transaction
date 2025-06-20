@@ -43,6 +43,15 @@
         public const int CIAM_UNMAPPED_ERROR = 4017;
         public const int RLP_UNMAPPED_ERROR = 4018;
 
+        // Voucher error codes
+        public const int VOUCHER_REVOKED_INVALID_VOUCHER_TYPE_CODE = 4100;
+        public const int VOUCHER_REVOKED_INVALID_TRANSACTION_TYPE_CODE = 4101;
+        public const int VOUCHER_REVOKED_VMS_ERROR = 4102;
+        public const int VOUCHER_REVOKED_VMS_TIMEOUT = 4103;
+        public const int VOUCHER_ISSUED_UPDATE_FAILED = 4104;
+        public const int INVALID_VOUCHER_REVOKE_FAILED = 4104;
+        public const int VMS_GET_VOUCHER_TYPES_FAILED = 4105;
+
         /// <summary>
         /// Validates whether the provided type is one of the known SignUpType constants.
         /// </summary>

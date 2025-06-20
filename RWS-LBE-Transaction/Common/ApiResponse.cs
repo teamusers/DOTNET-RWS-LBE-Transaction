@@ -77,6 +77,18 @@ namespace RWS_LBE_Transaction.Common
 
         public static ApiResponse? UnmappedRlpErrorResponse(object? rlpResponse) =>
             new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse };
+
+        public static ApiResponse? SendVoucherIssuanceErrorResponse(RevokeOfferReason revokeReason, object? vmsErrorDetails) =>
+            new ApiResponse { Code = revokeReason.LbeErrorCode, Message = revokeReason.Description, Data = vmsErrorDetails };
+
+        public static ApiResponse InvalidVoucherIssuanceRevokeErrorResponse() =>
+            new ApiResponse { Code = Codes.INVALID_VOUCHER_REVOKE_FAILED, Message = "invalid voucher revoke process failed" };
+
+        public static ApiResponse ValidVoucherIssuanceUpdateErrorResponse() =>
+            new ApiResponse { Code = Codes.VOUCHER_ISSUED_UPDATE_FAILED, Message = "voucher issued in vms but failed to update in rlp" };
+
+        public static ApiResponse VmsGetVoucherTypeCodesErrorResponse() =>
+            new ApiResponse { Code = Codes.VMS_GET_VOUCHER_TYPES_FAILED, Message = "unable to get latest voucher type codes list from vms" };
     }
 
     public class ApiException

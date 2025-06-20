@@ -28,4 +28,25 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Requests
         [JsonPropertyName("user_offer_id")]
         public string? UserOfferId { get; set; }
     }
+
+    public class UpdateOfferRequest
+    {
+        [JsonPropertyName("retailer_id")]
+        public string? RetailerId { get; set; }
+
+        [JsonPropertyName("user_id")]
+        public string? UserId { get; set; }
+
+        [JsonPropertyName("user_offer_id")]
+        public string? UserOfferId { get; set; }
+
+        [JsonPropertyName("custom_data")]
+        public string? CustomData { get; set; }
+
+        [JsonPropertyName("remain_pending_extended_data")]
+        public bool RemainPendingExtendedData { get; set; } = false;
+
+        [JsonPropertyName("update_redemption_dates")]
+        public bool UpdateRedemptionDates { get; set; } = false;
+    }
 }

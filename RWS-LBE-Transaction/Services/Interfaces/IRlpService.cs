@@ -10,7 +10,8 @@ namespace RWS_LBE_Transaction.Services.Interfaces
 
         // Offers
         Task<FetchOffersDetailsResponse?> FetchOffersDetails(List<string> offerIdList);
-        void RevokeOffer(object payload);
+        Task RevokeOffer(string userOfferId, string reason);
+        Task UpdateOffer(string externalId, string userOfferId, string systemTransactionId);
 
         // Transactions
         Task<UserTransactionResponse?> ViewTransaction(string externalId);

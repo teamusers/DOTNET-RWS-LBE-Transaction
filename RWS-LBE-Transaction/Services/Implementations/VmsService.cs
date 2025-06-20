@@ -24,15 +24,33 @@ namespace RWS_LBE_Transaction.Services.Implementations
         public async Task<GetVoucherTypesResponse?> GetVoucherTypes()
         {
             var payload = new GetVoucherTypesRequest
-            { 
-                InterfaceRequestHeaderDT = new InterfaceRequestHeaderDT{
-                    SystemID = 180
-                }
+            {
+                InterfaceRequestHeaderDT = { SystemID = _config.SystemID }
             };
 
             var (sigHeaders, url) = VmsHelper.BuildVmsRequestInfo(_config, HttpMethod.Post, VmsApiEndpoints.GetVoucherType, payload);
 
             return await _apiHttpClient.DoApiRequestAsync<GetVoucherTypesResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Method = HttpMethod.Post,
+                Url = url,
+                Headers = sigHeaders,
+                Body = payload
+            });
+        }
+
+        public async Task<IssueVoucherResponse?> IssueVoucher(VoucherIssuanceParamDT voucher)
+        {
+            var payload = new IssueVoucherRequest
+            {
+                InterfaceRequestHeaderDT = { SystemID = _config.SystemID },
+                VoucherRequestParamDT = { IsBatchProcess = false },
+                VoucherIssuanceParamDT = [voucher]
+            };
+
+            var (sigHeaders, url) = VmsHelper.BuildVmsRequestInfo(_config, HttpMethod.Post, VmsApiEndpoints.IssueVoucher, payload);
+
+            return await _apiHttpClient.DoApiRequestAsync<IssueVoucherResponse>(new DTOs.Shared.ApiRequestOptions
             {
                 Method = HttpMethod.Post,
                 Url = url,

@@ -9,6 +9,15 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Responses
         public InterfaceResponseHeaderDT InterfaceResponseHeaderDT { get; set; } = new InterfaceResponseHeaderDT();
 
         [JsonPropertyName("VoucherTypeDT")]
-        public List<VoucherType> VoucherTypeDT { get; set; } = [];
+        public List<VoucherTypeDT> VoucherTypeDT { get; set; } = [];
+    }
+
+    public class IssueVoucherResponse
+    {
+        [JsonPropertyName("InterfaceResponseHeaderDT")]
+        public InterfaceResponseHeaderDT InterfaceResponseHeaderDT { get; set; } = new InterfaceResponseHeaderDT();
+
+        [JsonPropertyName("VoucherIssuanceInfoDT")]
+        public List<VoucherIssuanceInfoDT>? VoucherIssuanceInfoDT { get; set; }
     }
 }

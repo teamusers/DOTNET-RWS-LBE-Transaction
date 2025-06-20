@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Configurations;
@@ -28,7 +29,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             return await _apiHttpClient.DoApiRequestAsync<GetAllCampaignsResponse>(new DTOs.Shared.ApiRequestOptions
             {
                 Url = url,
-                BasicAuth = basicAuth   
+                BasicAuth = basicAuth
             });
         }
 
@@ -66,22 +67,61 @@ namespace RWS_LBE_Transaction.Services.Implementations
 
         public async Task<UserTransactionResponse?> ViewTransaction(string externalId)
         {
-                var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
-                    _config,
-                    RlpApiEndpoints.ViewTransaction,
-                    externalId,
-                    null);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewTransaction,
+                externalId,
+                null);
 
-                return await _apiHttpClient.DoApiRequestAsync<UserTransactionResponse>(new DTOs.Shared.ApiRequestOptions
-                {
-                    Url = url,
-                    BasicAuth = basicAuth
-                });
+            return await _apiHttpClient.DoApiRequestAsync<UserTransactionResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth
+            });
         }
 
-        public void RevokeOffer(object payload)
+        public async Task RevokeOffer(string userOfferId, string reason)
         {
-            throw new NotImplementedException();
+            var payload = new RevokeOfferRequest
+            {
+                RetailerId = _config.RetailerId,
+                Reason = reason,
+                UserOfferId = userOfferId
+            };
+
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.RevokeOffer, null, null);
+
+            await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
+        public async Task UpdateOffer(string externalId, string userOfferId, string systemTransactionId)
+        {
+            var payload = new UpdateOfferRequest
+            {
+                RetailerId = _config.RetailerId,
+                UserId = externalId,
+                UserOfferId = userOfferId,
+                CustomData = JsonSerializer.Serialize(new
+                {
+                    system_transaction_id = systemTransactionId
+                })
+            };
+
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.UpdateOffer, null, null);
+
+            await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
         }
     }
 }

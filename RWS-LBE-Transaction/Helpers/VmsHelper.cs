@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Configurations;
 using RWS_LBE_Transaction.DTOs.VMS.Shared;
 
@@ -61,11 +62,11 @@ namespace RWS_LBE_Transaction.Helpers
                 { "Date", dateHeader },
                 { "Content-MD5", base64Md5 },
                 { "Payload-Length", contentLength.ToString() },
-                { "Request-Id", $"rlc-int-{timestampNow}_{Guid.NewGuid()}" }
+                { "RequestID", $"rlc-int-{timestampNow}_{Guid.NewGuid()}" }
             };
         }
 
-        public static bool ValidateVoucherType(List<VoucherType> validVoucherTypes, string voucherType)
+        public static bool ValidateVoucherType(List<VoucherTypeDT> validVoucherTypes, string voucherType)
         {
             if (validVoucherTypes.Any(v =>
                 v.VoucherTypeCode != null && voucherType != null &&
@@ -77,10 +78,9 @@ namespace RWS_LBE_Transaction.Helpers
             return false;
         }
 
-        //TODO: update logic
         public static bool ValidateTransactionType(string transactionType)
         {
-            if (transactionType == "validTransactionTypeCode")
+            if (transactionType == TransactionTypeCodes.ITD || transactionType == TransactionTypeCodes.NON_ITD)
             {
                 return true;
             }
