@@ -43,7 +43,7 @@ namespace RWS_LBE_Transaction.Controllers
                 var rawResponse = await _rlpService.ViewTransactionRaw(externalId, event_types);
                 if (string.IsNullOrEmpty(rawResponse))
                 {
-                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
                 }
                 var jsonDocument = JsonDocument.Parse(rawResponse);
                 var data = jsonDocument.RootElement;
@@ -65,7 +65,7 @@ namespace RWS_LBE_Transaction.Controllers
                 
                 if (string.IsNullOrEmpty(rawResponse))
                 {
-                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
                 }
 
                 // Parse the raw JSON to get the actual data
@@ -90,7 +90,7 @@ namespace RWS_LBE_Transaction.Controllers
                 var rawResponse = await _rlpService.ViewPointRaw(externalId);
                 if (string.IsNullOrEmpty(rawResponse))
                 {
-                    return NotFound(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
                 }
                 var jsonDocument = JsonDocument.Parse(rawResponse);
                 var data = jsonDocument.RootElement;
@@ -148,7 +148,7 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_send_transaction_error");
                 _logger.LogError(ex, "Error sending transaction");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             try
@@ -163,21 +163,14 @@ namespace RWS_LBE_Transaction.Controllers
             if (transactionResponse != null)
                 transactionResponse.TransactionId = transactionId;
 
-            return StatusCode(201, ResponseTemplate.GenericSuccessResponse(transactionResponse));
+            return Ok(ResponseTemplate.GenericSuccessResponse(transactionResponse));
         }
 
         [HttpPost("burn")]
         public async Task<IActionResult> Burn([FromBody] BurnTransaction req)
         {
-            if (req == null || req.RequestPayload == null)
+            if (req == null || req.RequestPayload == null || req.RequestPayload.Payments == null || req.RequestPayload.Payments.Count == 0)
                 return BadRequest(ResponseTemplate.InvalidRequestBodyErrorResponse());
-
-            // Check if payments array is empty
-            if (req.RequestPayload.Payments == null || req.RequestPayload.Payments.Count == 0)
-            {
-                _logger.LogWarning("No payments found in request payload");
-                return BadRequest(ResponseTemplate.InvalidRequestBodyErrorResponse());
-            }
 
             // Extract user ID and amount from payment details
             string? userId = null;
@@ -195,7 +188,7 @@ namespace RWS_LBE_Transaction.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("No user ID found in payment details");
-                return BadRequest(ResponseTemplate.InvalidRequestBodyErrorResponse());
+                return Conflict(ResponseTemplate.InvalidRequestBodyErrorResponse());
             }
 
             // Generate transaction ID
@@ -208,7 +201,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating transaction ID record");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             // Get wallet balance and find spend wallet
@@ -228,13 +221,13 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_wallet_error");
                 _logger.LogError(ex, "Error viewing wallet balance");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             if (walletBalance?.Payload?.Details == null)
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_wallet_error");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             // Find the spend wallet
@@ -254,14 +247,14 @@ namespace RWS_LBE_Transaction.Controllers
             if (string.IsNullOrEmpty(spendId))
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_wallet_error");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             // Check if user has enough balance
             if (spendBalance - subtotal < 0)
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_insufficient_balance");
-                return StatusCode(409, ResponseTemplate.UnsuccessfulUpdate());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             // Generate IDs for spend operation
@@ -303,7 +296,7 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_spend_error");
                 _logger.LogError(ex, "Error spending points");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             // TODO: Process spendResponse for later processing if needed
@@ -333,7 +326,7 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 await _transactionSequenceService.UpdateTransactionIDStatusAsync(recordId, "failed_send_transaction_error");
                 _logger.LogError(ex, "Error sending transaction");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             try
@@ -348,7 +341,7 @@ namespace RWS_LBE_Transaction.Controllers
             if (transactionResponse != null)
                 transactionResponse.TransactionId = transactionId;
 
-            return StatusCode(201, ResponseTemplate.GenericSuccessResponse(transactionResponse));
+            return Ok(ResponseTemplate.GenericSuccessResponse(transactionResponse));
         }
     }
 } 

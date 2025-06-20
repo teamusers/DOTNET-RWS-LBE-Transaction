@@ -62,7 +62,7 @@ namespace RWS_LBE_Transaction.Controllers
             if (campaignsResponse?.Campaigns.ValueKind != JsonValueKind.Object)
             {
                 _logger.LogError("[API EXCEPTION] RLP: Get campaigns by ID returned no data.");
-                return StatusCode(500, ResponseTemplate.InternalErrorResponse());
+                return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
             }
 
             var offerIdList = RlpHelper.ExtractOfferIDsFromJsonElement(campaignsResponse.Campaigns);
