@@ -12,8 +12,8 @@ using RWS_LBE_Transaction.Data;
 namespace RWS_LBE_Transaction.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250619025455_AddTransactionIDRecord")]
-    partial class AddTransactionIDRecord
+    [Migration("20250620040450_CreateTransactionTable")]
+    partial class CreateTransactionTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,6 +153,10 @@ namespace RWS_LBE_Transaction.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("transaction_id");
+
+                    b.Property<long>("TransactionNumber")
+                        .HasColumnType("bigint")
+                        .HasColumnName("transaction_number");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")

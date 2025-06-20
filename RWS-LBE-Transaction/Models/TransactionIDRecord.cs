@@ -17,6 +17,9 @@ namespace RWS_LBE_Transaction.Models
         [MaxLength(50)]
         public string TransactionId { get; set; } = string.Empty;
 
+        [Column("transaction_number")]
+        public long TransactionNumber { get; set; }
+
         [Column("status")]
         [Required]
         [MaxLength(50)]

@@ -151,6 +151,10 @@ namespace RWS_LBE_Transaction.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("transaction_id");
 
+                    b.Property<long>("TransactionNumber")
+                        .HasColumnType("bigint")
+                        .HasColumnName("transaction_number");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
