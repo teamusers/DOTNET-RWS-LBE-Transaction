@@ -190,6 +190,11 @@ namespace RWS_LBE_Transaction.Controllers
                 _logger.LogWarning("No user ID found in payment details");
                 return Conflict(ResponseTemplate.InvalidRequestBodyErrorResponse());
             }
+            if (subtotal <= 0)
+            {
+                _logger.LogWarning("Invalid subtotal amount");
+                return Conflict(ResponseTemplate.BurnSubtotalLessThanOrEqualToZeroErrorResponse());
+            }
 
             // Generate transaction ID
             string transactionId;
