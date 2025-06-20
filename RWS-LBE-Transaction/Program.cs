@@ -46,22 +46,24 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 var apiPrefix = "/api/v1/";
 var protectedPrefixes = new[]
 {
-    apiPrefix + "transaction/user/:external_id"
+    apiPrefix + "transaction",
+    apiPrefix + "voucher",
 };
 
 app.UseWhen(
     ctx =>
     {
-        // if the request path starts with any of our protected prefixes�
-        var path = ctx.Request.Path;
-        return protectedPrefixes
-            .Any(p => path.StartsWithSegments(p, StringComparison.OrdinalIgnoreCase));
+        var path = ctx.Request.Path.Value ?? "";
+        Console.WriteLine($"[UseWhen] Incoming request path: {path}");
+        return protectedPrefixes.Any(p =>
+            path.StartsWith(p, StringComparison.OrdinalIgnoreCase));
     },
     branch =>
     {
-        // �then run the JWT interceptor on that branch.
+        Console.WriteLine("[UseWhen] JWT Middleware will run for this path.");
         branch.UseMiddleware<JwtInterceptorMiddleware>();
     });
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
