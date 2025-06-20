@@ -43,6 +43,9 @@
         public const int CIAM_UNMAPPED_ERROR = 4017;
         public const int RLP_UNMAPPED_ERROR = 4018;
 
+        // Transaction error codes
+        public const int TRANSACTION_BURN_SUBTOTAL_LESS_THAN_OR_EQUAL_TO_ZERO = 4200;
+
         // Voucher error codes
         public const int VOUCHER_REVOKED_INVALID_VOUCHER_TYPE_CODE = 4100;
         public const int VOUCHER_REVOKED_INVALID_TRANSACTION_TYPE_CODE = 4101;

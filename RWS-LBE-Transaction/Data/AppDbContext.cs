@@ -10,6 +10,7 @@ namespace RWS_LBE_Transaction.Data
          
         public DbSet<SysChannel> SysChannel { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<TransactionIDRecord> TransactionIDRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

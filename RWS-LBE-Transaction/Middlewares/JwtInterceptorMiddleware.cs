@@ -21,6 +21,7 @@ public class JwtInterceptorMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        Console.WriteLine($"[JWT Middleware] Path matched: {context.Request.Path}");
         var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
         if (string.IsNullOrEmpty(authHeader))
         {
