@@ -67,4 +67,16 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Requests
         [JsonPropertyName("issue_exact_version")]
         public bool IssueExactVerson { get; set; } = false;
     }
+
+    public class ManualRedeemOfferRequest
+    {
+        [JsonPropertyName("retailer_id")]
+        public string? RetailerId { get; set; }
+
+        [JsonPropertyName("user_offer_id")]
+        public string? UserOfferId { get; set; }
+
+        [JsonPropertyName("force_redeem")]
+        public bool ForceRedeem { get; set; } = false;
+    }
 }

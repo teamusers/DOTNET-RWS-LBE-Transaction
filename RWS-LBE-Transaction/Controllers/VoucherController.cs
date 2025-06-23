@@ -251,7 +251,7 @@ namespace RWS_LBE_Transaction.Controllers
                 };
 
                 var utilizeVoucherResponse = await _vms.UtilizeVoucher(voucher);
-                
+
                 if (utilizeVoucherResponse?.InterfaceResponseHeaderDT.FaultCodeID != 0)
                 {
                     _logger.LogError("[API EXCEPTION] VMS: Failed to utilize voucher {VoucherNo}.", req.VoucherNo);
@@ -262,6 +262,22 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to utilize voucher {VoucherNo}.", req.VoucherNo);
                 return VmsApiErrors.Handle(ex);
+            }
+
+            return Ok(ResponseTemplate.GenericSuccessResponse(null));
+        }
+
+        [HttpPost("sync")]
+        public async Task<IActionResult> SyncVoucher([FromBody] SyncVoucherRequest req)
+        {
+            try
+            {
+                await _rlp.ManualRedeemOffer(req.VoucherNo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to sync voucher redemption status.");
+                return RlpApiErrors.Handle(ex);
             }
 
             return Ok(ResponseTemplate.GenericSuccessResponse(null));

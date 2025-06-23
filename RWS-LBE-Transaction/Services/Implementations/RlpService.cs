@@ -302,5 +302,24 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Body = payload
             });
         }
+
+        public async Task ManualRedeemOffer(string userOfferId)
+        {
+            var payload = new ManualRedeemOfferRequest
+            {
+                RetailerId = _config.RetailerId,
+                UserOfferId = userOfferId
+            };
+
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.ManualRedeemOffer, null, null);
+
+            await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
     }
 }

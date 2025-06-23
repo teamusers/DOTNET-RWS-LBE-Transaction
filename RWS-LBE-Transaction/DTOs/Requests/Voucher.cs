@@ -29,4 +29,10 @@ namespace RWS_LBE_Transaction.DTOs.Requests
         [JsonPropertyName("voucher_no")]
         public required string VoucherNo { get; set; }
     }
+
+    public class SyncVoucherRequest
+    {
+        [JsonPropertyName("voucher_no")]
+        public required string VoucherNo { get; set; }
+    }
 }

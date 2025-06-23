@@ -15,6 +15,8 @@ namespace RWS_LBE_Transaction.Services.Interfaces
         Task UpdateOffer(string externalId, string userOfferId, string systemTransactionId);
         Task<IssueOfferResponse?> IssueOffer(string externalId, string offerId);
 
+        Task ManualRedeemOffer(string userOfferId);
+
         // Transactions
         Task<UserTransactionResponse?> ViewTransaction(string externalId, string? event_types = null);
         Task<object?> ViewTransactionRaw(string externalId, string? event_types = null, int? count = null, int? since = null);
