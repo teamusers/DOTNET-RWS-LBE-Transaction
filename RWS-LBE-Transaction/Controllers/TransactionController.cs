@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using RWS_LBE_Transaction.DTOs.Configurations;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace RWS_LBE_Transaction.Controllers
 {
@@ -40,14 +39,8 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var rawResponse = await _rlpService.ViewTransactionRaw(externalId, event_types);
-                if (string.IsNullOrEmpty(rawResponse))
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
-                }
-                var jsonDocument = JsonDocument.Parse(rawResponse);
-                var data = jsonDocument.RootElement;
-                return Ok(ResponseTemplate.GenericSuccessResponse(data));
+                var response = await _rlpService.ViewTransactionRaw(externalId, event_types);
+                return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)
             {
@@ -61,19 +54,9 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var rawResponse = await _rlpService.ViewStoreTransactionRaw(payload);
-                
-                if (string.IsNullOrEmpty(rawResponse))
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
-                }
+                var response = await _rlpService.ViewStoreTransactionRaw(payload);
 
-                // Parse the raw JSON to get the actual data
-                var jsonDocument = JsonDocument.Parse(rawResponse);
-                var data = jsonDocument.RootElement;
-
-                // Wrap with our response template
-                return Ok(ResponseTemplate.GenericSuccessResponse(data));
+                return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)
             {
@@ -87,14 +70,8 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var rawResponse = await _rlpService.ViewPointRaw(externalId);
-                if (string.IsNullOrEmpty(rawResponse))
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ResponseTemplate.InternalErrorResponse());
-                }
-                var jsonDocument = JsonDocument.Parse(rawResponse);
-                var data = jsonDocument.RootElement;
-                return Ok(ResponseTemplate.GenericSuccessResponse(data));
+                var response = await _rlpService.ViewPointRaw(externalId);
+                return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)
             {
