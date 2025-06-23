@@ -35,11 +35,11 @@ namespace RWS_LBE_Transaction.Controllers
         }
 
         [HttpGet("user/{externalId}")]
-        public async Task<IActionResult> GetTransaction(string externalId, [FromQuery] string? event_types = null)
+        public async Task<IActionResult> GetTransaction(string externalId, [FromQuery] string? event_types = null, [FromQuery] int? count = null, [FromQuery] int? since = null)
         {
             try
             {
-                var response = await _rlpService.ViewTransactionRaw(externalId, event_types);
+                var response = await _rlpService.ViewTransactionRaw(externalId, event_types, count, since);
                 return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)

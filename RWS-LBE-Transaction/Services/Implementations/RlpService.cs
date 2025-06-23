@@ -173,13 +173,26 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<object?> ViewTransactionRaw(string externalId, string? event_types = null)
+        public async Task<object?> ViewTransactionRaw(string externalId, string? event_types = null, int? count = null, int? since = null)
         {
-            string? query = null;
+            var queryParams = new List<string>();
+            
             if (!string.IsNullOrEmpty(event_types))
             {
-                query = $"event_types={event_types}";
+                queryParams.Add($"event_types={event_types}");
             }
+            
+            if (count.HasValue)
+            {
+                queryParams.Add($"count={count.Value}");
+            }
+            
+            if (since.HasValue)
+            {
+                queryParams.Add($"since={since.Value}");
+            }
+            
+            string? query = queryParams.Count > 0 ? string.Join("&", queryParams) : null;
 
             var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
                 _config,

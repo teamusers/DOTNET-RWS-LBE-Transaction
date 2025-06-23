@@ -16,7 +16,7 @@ namespace RWS_LBE_Transaction.Services.Interfaces
 
         // Transactions
         Task<UserTransactionResponse?> ViewTransaction(string externalId, string? event_types = null);
-        Task<object?> ViewTransactionRaw(string externalId, string? event_types = null);
+        Task<object?> ViewTransactionRaw(string externalId, string? event_types = null, int? count = null, int? since = null);
 
         Task<StoreTransactionsResponse?> ViewStoreTransaction(object payload);
         Task<object?> ViewStoreTransactionRaw(object payload);
