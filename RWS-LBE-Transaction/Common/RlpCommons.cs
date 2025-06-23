@@ -19,6 +19,7 @@ namespace RWS_LBE_Transaction.Common
         public const string SpendMultipleTransactions = "/incentives/api/1.0/user_points/spend_multiple";
         public const string RevokeOffer = "/offers/api/2.0/offers/acquisition/revoke";
         public const string UpdateOffer = "/offers/api/2.0/offers/acquisition/update";
+        public const string IssueOffer = "/offers/api/2.0/offers/acquisition/issue";
     }
 
     public class RlpApiQueries

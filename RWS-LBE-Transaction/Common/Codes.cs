@@ -42,6 +42,7 @@
         public const int PASSWORD_COMPLEXITY_INVALID = 4016;
         public const int CIAM_UNMAPPED_ERROR = 4017;
         public const int RLP_UNMAPPED_ERROR = 4018;
+        public const int VMS_UNMAPPED_ERROR = 4019;
 
         // Transaction error codes
         public const int TRANSACTION_BURN_SUBTOTAL_LESS_THAN_OR_EQUAL_TO_ZERO = 4200;

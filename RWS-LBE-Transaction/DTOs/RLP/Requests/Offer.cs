@@ -49,4 +49,22 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Requests
         [JsonPropertyName("update_redemption_dates")]
         public bool UpdateRedemptionDates { get; set; } = false;
     }
+
+    public class IssueOfferRequest
+    {
+        [JsonPropertyName("retailer_id")]
+        public string? RetailerId { get; set; }
+
+        [JsonPropertyName("user_id")]
+        public string? UserId { get; set; }
+
+        [JsonPropertyName("offer_id")]
+        public string? OfferId { get; set; }
+
+        [JsonPropertyName("quantity")]
+        public int Quantity { get; set; } = 1;
+
+        [JsonPropertyName("issue_exact_version")]
+        public bool IssueExactVerson { get; set; } = false;
+    }
 }

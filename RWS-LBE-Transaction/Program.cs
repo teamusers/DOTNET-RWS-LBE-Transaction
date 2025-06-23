@@ -47,7 +47,9 @@ var apiPrefix = "/api/v1/";
 var protectedPrefixes = new[]
 {
     apiPrefix + "transaction",
-    apiPrefix + "voucher/campaign", // /voucher endpoints will use api key instead
+    apiPrefix + "voucher/campaign", // certain /voucher endpoints will use api key instead
+    apiPrefix + "voucher/issue/trigger",
+    apiPrefix + "voucher/utilise"
 };
 
 app.UseWhen(

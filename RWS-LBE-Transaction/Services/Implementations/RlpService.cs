@@ -4,10 +4,8 @@ using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Configurations;
 using RWS_LBE_Transaction.DTOs.RLP.Requests;
 using RWS_LBE_Transaction.DTOs.RLP.Responses;
-using RWS_LBE_Transaction.DTOs.Shared;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
-using System.Net.Http;
 
 namespace RWS_LBE_Transaction.Services.Implementations
 {
@@ -277,6 +275,26 @@ namespace RWS_LBE_Transaction.Services.Implementations
             var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.UpdateOffer, null, null);
 
             await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
+        public async Task<IssueOfferResponse?> IssueOffer(string externalId, string offerId)
+        {
+            var payload = new IssueOfferRequest
+            {
+                RetailerId = _config.RetailerId,
+                UserId = externalId,
+                OfferId = offerId
+            };
+
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_config, RlpApiEndpoints.IssueOffer, null, null);
+
+            return await _apiHttpClient.DoApiRequestAsync<IssueOfferResponse>(new DTOs.Shared.ApiRequestOptions
             {
                 Url = url,
                 BasicAuth = basicAuth,

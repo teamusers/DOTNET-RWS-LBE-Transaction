@@ -77,7 +77,10 @@ namespace RWS_LBE_Transaction.Common
 
         public static ApiResponse? UnmappedRlpErrorResponse(object? rlpResponse) =>
             new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped rlp error encountered", Data = rlpResponse };
-            
+
+        public static ApiResponse? UnmappedVmsErrorResponse(object? vmsResponse) =>
+            new ApiResponse { Code = Codes.VMS_UNMAPPED_ERROR, Message = "unmapped vms error encountered", Data = vmsResponse };
+
         public static ApiResponse? BurnSubtotalLessThanOrEqualToZeroErrorResponse() =>
             DefaultResponse(Codes.TRANSACTION_BURN_SUBTOTAL_LESS_THAN_OR_EQUAL_TO_ZERO, "subtotal less than or equal to zero");
 

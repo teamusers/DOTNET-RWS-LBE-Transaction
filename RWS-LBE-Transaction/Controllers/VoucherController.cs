@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using RWS_LBE_Transaction.Common;
 using RWS_LBE_Transaction.DTOs.Requests;
 using RWS_LBE_Transaction.DTOs.VMS.Shared;
@@ -136,6 +137,69 @@ namespace RWS_LBE_Transaction.Controllers
                     _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to revoke voucher.");
                     return BadRequest(ResponseTemplate.InvalidVoucherIssuanceRevokeErrorResponse());
                 }
+            }
+
+            // if no error, update offer in RLP
+            try
+            {
+                await _rlp.UpdateOffer(req.RlpId, voucher.VoucherNo!, voucher.SystemTransactionID);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to update voucher in RLP after issuance.");
+                return BadRequest(ResponseTemplate.ValidVoucherIssuanceUpdateErrorResponse());
+            }
+
+            return Ok(ResponseTemplate.GenericSuccessResponse(null));
+        }
+
+        [HttpPost("issue/trigger")]
+        public async Task<IActionResult> ManualVoucherIssuance([FromBody] ManualVoucherIssuanceRequest req)
+        {
+            //TODO: add request body validator logic
+
+            VoucherIssuanceParamDT voucher = req.VoucherIssuanceParamDT;
+
+            // Issue offer to User via RLP
+
+            try
+            {
+                var issueOfferResponse = await _rlp.IssueOffer(req.RlpId, req.OfferId);
+                voucher.VoucherNo = issueOfferResponse?.Payload?.StatusList?[0].UserOfferId;
+
+                if (voucher.VoucherNo.IsNullOrEmpty())
+                {
+                    _logger.LogError("[API EXCEPTION] RLP: Offer issued but user_offer_id not found.");
+                    return BadRequest(ResponseTemplate.UnmappedRlpErrorResponse(null));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to issue offer.");
+                return RlpApiErrors.Handle(ex);
+            }
+
+            // Generate new systemTransactionId
+
+            voucher.SystemTransactionID = Guid.NewGuid().ToString();
+
+            //  Issue Voucher to VMS
+            InterfaceResponseHeaderDT? interfaceResponseHeaderDT = null;
+
+            try
+            {
+                var issueVoucherResponse = await _vms.IssueVoucher(voucher);
+                interfaceResponseHeaderDT = issueVoucherResponse?.InterfaceResponseHeaderDT;
+
+                if (interfaceResponseHeaderDT?.FaultCodeID != 0)
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to issue voucher {VoucherNo}.", voucher.VoucherNo);
+                return BadRequest(ResponseTemplate.UnmappedVmsErrorResponse(interfaceResponseHeaderDT));
             }
 
             // if no error, update offer in RLP
