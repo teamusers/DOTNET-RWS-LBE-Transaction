@@ -88,22 +88,6 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<StoreTransactionsResponse?> ViewStoreTransaction(object payload)
-        {
-            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
-                _config,
-                RlpApiEndpoints.ViewStoreTransaction,
-                null,
-                null);
-
-            return await _apiHttpClient.DoApiRequestAsync<StoreTransactionsResponse>(new DTOs.Shared.ApiRequestOptions
-            {
-                Url = url,
-                BasicAuth = basicAuth,
-                Method = HttpMethod.Post,
-                Body = payload
-            });
-        }
 
         public async Task<UserPointResponse?> ViewPoint(string externalId)
         {
@@ -172,13 +156,43 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<string?> ViewTransactionRaw(string externalId, string? event_types = null)
+        public async Task<StoreTransactionsResponse?> ViewStoreTransaction(object payload)
         {
-            string? query = null;
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
+                _config,
+                RlpApiEndpoints.ViewStoreTransaction,
+                null,
+                null);
+
+            return await _apiHttpClient.DoApiRequestAsync<StoreTransactionsResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Url = url,
+                BasicAuth = basicAuth,
+                Method = HttpMethod.Post,
+                Body = payload
+            });
+        }
+
+        public async Task<object?> ViewTransactionRaw(string externalId, string? event_types = null, int? count = null, int? since = null)
+        {
+            var queryParams = new List<string>();
+            
             if (!string.IsNullOrEmpty(event_types))
             {
-                query = $"event_types={event_types}";
+                queryParams.Add($"event_types={event_types}");
             }
+            
+            if (count.HasValue)
+            {
+                queryParams.Add($"count={count.Value}");
+            }
+            
+            if (since.HasValue)
+            {
+                queryParams.Add($"since={since.Value}");
+            }
+            
+            string? query = queryParams.Count > 0 ? string.Join("&", queryParams) : null;
 
             var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
                 _config,
@@ -188,14 +202,14 @@ namespace RWS_LBE_Transaction.Services.Implementations
 
             Console.WriteLine($"URL: {url}");
 
-            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            return await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
             {
                 Url = url,
                 BasicAuth = basicAuth
             });
         }
 
-        public async Task<string?> ViewStoreTransactionRaw(object payload)
+        public async Task<object?> ViewStoreTransactionRaw(object payload)
         {
             var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(
                 _config,
@@ -203,7 +217,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 null,
                 null);
 
-            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            return await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
             {
                 Url = url,
                 BasicAuth = basicAuth,
@@ -212,7 +226,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             });
         }
 
-        public async Task<string?> ViewPointRaw(string externalId)
+        public async Task<object?> ViewPointRaw(string externalId)
         {
             var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(
                 _config,
@@ -220,15 +234,13 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 externalId,
                 "user[user_profile]=true&expand_incentives=true&show_identifiers=true");
 
-            return await _apiHttpClient.GetRawResponseAsync(new DTOs.Shared.ApiRequestOptions
+            return await _apiHttpClient.DoApiRequestAsync<object>(new DTOs.Shared.ApiRequestOptions
             {
                 Method = HttpMethod.Get,
                 Url = url,
                 BasicAuth = basicAuth
             });
         }
-        
-        
         public async Task RevokeOffer(string userOfferId, string reason)
         {
             var payload = new RevokeOfferRequest

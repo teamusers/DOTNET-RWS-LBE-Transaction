@@ -9,7 +9,6 @@ namespace RWS_LBE_Transaction.Helpers
     public interface IApiHttpClient
     {
         Task<T?> DoApiRequestAsync<T>(ApiRequestOptions opts);
-        Task<string?> GetRawResponseAsync(ApiRequestOptions opts);
     }
 
     public class ApiHttpClient : IApiHttpClient
@@ -109,65 +108,5 @@ namespace RWS_LBE_Transaction.Helpers
             return result;
         }
 
-        public async Task<string?> GetRawResponseAsync(ApiRequestOptions opts)
-        {
-            using var request = new HttpRequestMessage(opts.Method, opts.Url);
-
-            if (opts.Body != null)
-            {
-                if (opts.ContentType == "application/x-www-form-urlencoded" && opts.Body is Dictionary<string, string> formDict)
-                {
-                    request.Content = new FormUrlEncodedContent(formDict);
-                }
-                else
-                {
-                    var json = JsonSerializer.Serialize(opts.Body, _jsonOptions);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                    opts.ContentType = "application/json"; // normalize
-                }
-            }
-
-            if (opts.BearerToken != null)
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", opts.BearerToken);
-            }
-
-            if (opts.BasicAuth != null)
-            {
-                var authValue = Convert.ToBase64String(
-                    Encoding.ASCII.GetBytes($"{opts.BasicAuth.Value.Username}:{opts.BasicAuth.Value.Password}"));
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authValue);
-            }
-
-            if (opts.Headers != null)
-            {
-                foreach (var header in opts.Headers)
-                {
-                    request.Headers.Add(header.Key, header.Value);
-                }
-            }
-
-            _logger.LogInformation("Making request to {Url}", opts.Url);
-
-            var response = await _httpClient.SendAsync(request);
-            var rawResponse = await response.Content.ReadAsStringAsync();
-
-            _logger.LogInformation("Response status: {StatusCode}", response.StatusCode);
-
-            if (response.StatusCode != opts.ExpectedStatus)
-            {
-                throw new ExternalApiException(
-                    $"API returned unexpected status code {response.StatusCode}",
-                    response.StatusCode,
-                    rawResponse);
-            }
-
-            if (string.IsNullOrWhiteSpace(rawResponse))
-            {
-                return null;
-            }
-
-            return rawResponse;
-        }
     }
 }
