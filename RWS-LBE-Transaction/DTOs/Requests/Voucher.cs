@@ -23,4 +23,10 @@ namespace RWS_LBE_Transaction.DTOs.Requests
         [JsonPropertyName("voucher_issuance_param")]
         public required VoucherIssuanceParamDT VoucherIssuanceParamDT { get; set; }
     }
+
+    public class UtiliseVoucherRequest
+    {
+        [JsonPropertyName("voucher_no")]
+        public required string VoucherNo { get; set; }
+    }
 }

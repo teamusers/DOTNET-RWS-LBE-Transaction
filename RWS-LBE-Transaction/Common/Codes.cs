@@ -55,6 +55,7 @@
         public const int VOUCHER_ISSUED_UPDATE_FAILED = 4104;
         public const int INVALID_VOUCHER_REVOKE_FAILED = 4104;
         public const int VMS_GET_VOUCHER_TYPES_FAILED = 4105;
+        public const int VOUCHER_STATUS_INVALID = 4106;
 
         /// <summary>
         /// Validates whether the provided type is one of the known SignUpType constants.

@@ -8,5 +8,9 @@ namespace RWS_LBE_Transaction.Services.Interfaces
         Task<GetVoucherTypesResponse?> GetVoucherTypes();
 
         Task<IssueVoucherResponse?> IssueVoucher(VoucherIssuanceParamDT voucher);
+
+        Task<EnquireVoucherResponse?> EnquireVoucher(string voucherNo);
+
+        Task<UtilizeVoucherResponse?> UtilizeVoucher(VoucherUtilizationParamDT voucher);
     }
 }

@@ -20,4 +20,22 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Responses
         [JsonPropertyName("VoucherIssuanceInfoDT")]
         public List<VoucherIssuanceInfoDT>? VoucherIssuanceInfoDT { get; set; }
     }
+
+    public class EnquireVoucherResponse
+    {
+        [JsonPropertyName("InterfaceResponseHeaderDT")]
+        public InterfaceResponseHeaderDT InterfaceResponseHeaderDT { get; set; } = new InterfaceResponseHeaderDT();
+
+        [JsonPropertyName("VoucherEnquiryInfoDT")]
+        public List<VoucherEnquiryInfoDT>? VoucherEnquiryInfoDT { get; set; }
+    }
+
+    public class UtilizeVoucherResponse
+    {
+        [JsonPropertyName("InterfaceResponseHeaderDT")]
+        public InterfaceResponseHeaderDT InterfaceResponseHeaderDT { get; set; } = new InterfaceResponseHeaderDT();
+
+        [JsonPropertyName("VoucherUtilizationInfoDT")]
+        public List<VoucherUtilizationInfoDT>? VoucherUtilizationInfoDT { get; set; }
+    }
 }

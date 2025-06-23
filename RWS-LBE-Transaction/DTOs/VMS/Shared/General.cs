@@ -16,4 +16,10 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Shared
         [JsonPropertyName("FaultCodeDescription")]
         public string FaultCodeDescription { get; set; } = "";
     }
+
+    public class VmsErrorResponse
+    {
+        [JsonPropertyName("InterfaceResponseHeaderDT")]
+        public InterfaceResponseHeaderDT? InterfaceResponseHeaderDT { get; set; }
+    }
 }

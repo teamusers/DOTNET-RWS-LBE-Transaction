@@ -78,6 +78,8 @@ namespace RWS_LBE_Transaction.Common
                         _ => new BadRequestObjectResult(ResponseTemplate.UnmappedRlpErrorResponse(errResp))
                     };
                 }
+
+                return new BadRequestObjectResult(ResponseTemplate.UnmappedRlpErrorResponse(null));
             }
 
             return new ObjectResult(ResponseTemplate.InternalErrorResponse()) { StatusCode = 500 };

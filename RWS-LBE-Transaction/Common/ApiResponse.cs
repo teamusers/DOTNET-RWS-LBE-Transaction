@@ -95,6 +95,9 @@ namespace RWS_LBE_Transaction.Common
 
         public static ApiResponse VmsGetVoucherTypeCodesErrorResponse() =>
             new ApiResponse { Code = Codes.VMS_GET_VOUCHER_TYPES_FAILED, Message = "unable to get latest voucher type codes list from vms" };
+
+        public static ApiResponse VoucherStatusInvalidErrorResponse(object? voucherInfo) =>
+            new ApiResponse { Code = Codes.VOUCHER_STATUS_INVALID, Message = "voucher status is not valid for utilisation", Data = voucherInfo};
     }
 
     public class ApiException

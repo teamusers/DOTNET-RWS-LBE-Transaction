@@ -182,24 +182,20 @@ namespace RWS_LBE_Transaction.Controllers
             // Generate new systemTransactionId
 
             voucher.SystemTransactionID = Guid.NewGuid().ToString();
-
-            //  Issue Voucher to VMS
-            InterfaceResponseHeaderDT? interfaceResponseHeaderDT = null;
-
             try
             {
                 var issueVoucherResponse = await _vms.IssueVoucher(voucher);
-                interfaceResponseHeaderDT = issueVoucherResponse?.InterfaceResponseHeaderDT;
-
+                //  Issue Voucher to VMS
+                InterfaceResponseHeaderDT? interfaceResponseHeaderDT = issueVoucherResponse?.InterfaceResponseHeaderDT;
                 if (interfaceResponseHeaderDT?.FaultCodeID != 0)
                 {
-                    throw new Exception();
+                    return BadRequest(ResponseTemplate.UnmappedVmsErrorResponse(interfaceResponseHeaderDT));
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to issue voucher {VoucherNo}.", voucher.VoucherNo);
-                return BadRequest(ResponseTemplate.UnmappedVmsErrorResponse(interfaceResponseHeaderDT));
+                return VmsApiErrors.Handle(ex);
             }
 
             // if no error, update offer in RLP
@@ -211,6 +207,61 @@ namespace RWS_LBE_Transaction.Controllers
             {
                 _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to update voucher in RLP after issuance.");
                 return BadRequest(ResponseTemplate.ValidVoucherIssuanceUpdateErrorResponse());
+            }
+
+            return Ok(ResponseTemplate.GenericSuccessResponse(null));
+        }
+
+        [HttpPost("utilise")]
+        public async Task<IActionResult> UtiliseVoucher([FromBody] UtiliseVoucherRequest req)
+        {
+            // enquire voucher validity
+
+            try
+            {
+                var enquireVoucherResponse = await _vms.EnquireVoucher(req.VoucherNo);
+
+                if (enquireVoucherResponse?.InterfaceResponseHeaderDT.FaultCodeID != 0)
+                {
+                    _logger.LogError("[API EXCEPTION] VMS: Failed to enquire voucher {VoucherNo}.", req.VoucherNo);
+                    return BadRequest(ResponseTemplate.UnmappedVmsErrorResponse(enquireVoucherResponse?.InterfaceResponseHeaderDT));
+                }
+
+                if (enquireVoucherResponse?.VoucherEnquiryInfoDT?[0].VoucherStatus != "V")
+                {
+                    _logger.LogError("[API EXCEPTION] VMS: Voucher {VoucherNo} status is invalid.", req.VoucherNo);
+                    return Conflict(ResponseTemplate.VoucherStatusInvalidErrorResponse(enquireVoucherResponse?.VoucherEnquiryInfoDT?[0]));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to enquire voucher {VoucherNo}.", req.VoucherNo);
+                return VmsApiErrors.Handle(ex);
+            }
+
+            // utilise voucher
+            try
+            {
+                var voucher = new VoucherUtilizationParamDT
+                {
+                    SystemTransactionID = Guid.NewGuid().ToString(),
+                    TerminalCode = "mockterminalcode", //TODO: figure out value is from where
+                    VoucherNo = req.VoucherNo,
+                    UtilizeDateTime = DateTime.Now, //TODO: figure out value is from where
+                };
+
+                var utilizeVoucherResponse = await _vms.UtilizeVoucher(voucher);
+                
+                if (utilizeVoucherResponse?.InterfaceResponseHeaderDT.FaultCodeID != 0)
+                {
+                    _logger.LogError("[API EXCEPTION] VMS: Failed to utilize voucher {VoucherNo}.", req.VoucherNo);
+                    return BadRequest(ResponseTemplate.UnmappedVmsErrorResponse(utilizeVoucherResponse?.InterfaceResponseHeaderDT));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[API EXCEPTION] VMS: Failed to utilize voucher {VoucherNo}.", req.VoucherNo);
+                return VmsApiErrors.Handle(ex);
             }
 
             return Ok(ResponseTemplate.GenericSuccessResponse(null));

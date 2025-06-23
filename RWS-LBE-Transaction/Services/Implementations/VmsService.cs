@@ -58,5 +58,45 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 Body = payload
             });
         }
+
+        public async Task<EnquireVoucherResponse?> EnquireVoucher(string voucherNo)
+        {
+            var payload = new EnquireVoucherRequest
+            {
+                InterfaceRequestHeaderDT = { SystemID = _config.SystemID },
+                VoucherRequestParamDT = { IsBatchProcess = false },
+                VoucherEnquiryParamDT = [new VoucherEnquiryParamDT { VoucherNo = voucherNo }]
+            };
+
+            var (sigHeaders, url) = VmsHelper.BuildVmsRequestInfo(_config, HttpMethod.Post, VmsApiEndpoints.IssueVoucher, payload);
+
+            return await _apiHttpClient.DoApiRequestAsync<EnquireVoucherResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Method = HttpMethod.Post,
+                Url = url,
+                Headers = sigHeaders,
+                Body = payload
+            });
+        }
+
+        public async Task<UtilizeVoucherResponse?> UtilizeVoucher(VoucherUtilizationParamDT voucher)
+        {
+            var payload = new UtilizeVoucherRequest
+            {
+                InterfaceRequestHeaderDT = { SystemID = _config.SystemID },
+                VoucherRequestParamDT = { IsBatchProcess = false },
+                VoucherUtilizationParamDT = [voucher]
+            };
+
+            var (sigHeaders, url) = VmsHelper.BuildVmsRequestInfo(_config, HttpMethod.Post, VmsApiEndpoints.UtilizeVoucher, payload);
+
+            return await _apiHttpClient.DoApiRequestAsync<UtilizeVoucherResponse>(new DTOs.Shared.ApiRequestOptions
+            {
+                Method = HttpMethod.Post,
+                Url = url,
+                Headers = sigHeaders,
+                Body = payload
+            });
+        }
     }
 }
