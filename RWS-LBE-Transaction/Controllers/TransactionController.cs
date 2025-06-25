@@ -324,7 +324,10 @@ namespace RWS_LBE_Transaction.Controllers
             }
 
             if (transactionResponse != null)
+            {
                 transactionResponse.TransactionId = transactionId;
+                transactionResponse.OpenTime = req.RequestPayload.OpenTime;
+            }
 
             return Ok(ResponseTemplate.GenericSuccessResponse(transactionResponse));
         }

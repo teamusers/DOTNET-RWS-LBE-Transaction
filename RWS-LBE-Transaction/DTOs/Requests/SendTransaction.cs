@@ -46,7 +46,7 @@ namespace RWS_LBE_Transaction.DTOs.Requests
         public double TaxTotal { get; set; }
 
         [JsonPropertyName("open_time")]
-        public DateTime OpenTime { get; set; }
+        public DateTime? OpenTime { get; set; }
 
         [JsonPropertyName("modified_time")]
         public DateTime ModifiedTime { get; set; }
