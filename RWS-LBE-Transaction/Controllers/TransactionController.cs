@@ -42,7 +42,7 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var response = await _rlpService.ViewTransactionRaw(externalId, event_types, count, since);
+                var response = await _rlpService.ViewTransaction(externalId, event_types, count, since);
                 return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)
@@ -57,7 +57,7 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var response = await _rlpService.ViewStoreTransactionRaw(payload);
+                var response = await _rlpService.ViewStoreTransaction(payload);
 
                 return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
@@ -73,7 +73,7 @@ namespace RWS_LBE_Transaction.Controllers
         {
             try
             {
-                var response = await _rlpService.ViewPointRaw(externalId);
+                var response = await _rlpService.ViewPoint(externalId);
                 return Ok(ResponseTemplate.GenericSuccessResponse(response));
             }
             catch (Exception ex)

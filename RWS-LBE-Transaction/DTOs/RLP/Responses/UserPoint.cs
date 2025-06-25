@@ -4,360 +4,134 @@ using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 {
-    public class UserPointResponse
+    public sealed class UserPointResponse
     {
-        [JsonPropertyName("status")]
-        public string? Status { get; set; }
-
-        [JsonPropertyName("user")]
-        public User? User { get; set; }
+        [JsonPropertyName("status")] public string Status { get; init; } = default!;
+        [JsonPropertyName("user")]   public RlpUser? User { get; init; }
     }
 
-    public class User
+    public sealed class RlpUser
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        [JsonPropertyName("id")]                         public string Id { get; init; } = default!;
+        [JsonPropertyName("external_id")]                public string ExternalId { get; init; } = default!;
+        [JsonPropertyName("opted_in")]                   public bool OptedIn { get; init; }
+        [JsonPropertyName("activated")]                  public bool Activated { get; init; }
+        [JsonPropertyName("proxy_ids")]                  public List<string> ProxyIds { get; init; } = new();
+        [JsonPropertyName("identifiers")]                public List<UserIdentifier> Identifiers { get; init; } = new();
+        [JsonPropertyName("available_points")]           public double AvailablePoints { get; init; }
+        [JsonPropertyName("test_points")]                public double TestPoints { get; init; }
+        [JsonPropertyName("unclaimed_achievement_count")]public int UnclaimedAchievementCount { get; init; }
+        [JsonPropertyName("email")]                      public string? Email { get; init; }
+        [JsonPropertyName("gender")]                     public string? Gender { get; init; }
+        [JsonPropertyName("dob")]                        public string? DateOfBirth { get; init; }
+        [JsonPropertyName("created_at")]                 public string? CreatedAt { get; init; }
+        [JsonPropertyName("updated_at")]                 public string? UpdatedAt { get; init; }
+        [JsonPropertyName("address")]                    public string? Address { get; init; }
+        [JsonPropertyName("address2")]                   public string? Address2 { get; init; }
+        [JsonPropertyName("city")]                       public string? City { get; init; }
+        [JsonPropertyName("zip")]                        public string? Zip { get; init; }
+        [JsonPropertyName("state")]                      public string? State { get; init; }
+        [JsonPropertyName("country")]                    public string? Country { get; init; }
+        [JsonPropertyName("suspended")]                  public bool Suspended { get; init; }
+        [JsonPropertyName("last_name")]                  public string? LastName { get; init; }
+        [JsonPropertyName("first_name")]                 public string? FirstName { get; init; }
+        [JsonPropertyName("registered_at")]              public string? RegisteredAt { get; init; }
+        [JsonPropertyName("profile_photo_url")]          public string? ProfilePhotoUrl { get; init; }
+        [JsonPropertyName("account_status")]             public string? AccountStatus { get; init; }
+        [JsonPropertyName("tier")]                       public string? Tier { get; init; }
+        [JsonPropertyName("tier_system")]                public string? TierSystem { get; init; }
+        [JsonPropertyName("tier_points")]                public double TierPoints { get; init; }
+        [JsonPropertyName("tier_entered_at")]            public string? TierEnteredAt { get; init; }
+        [JsonPropertyName("tier_resets_at")]             public string? TierResetsAt { get; init; }
 
-        [JsonPropertyName("external_id")]
-        public string? ExternalId { get; set; }
-
-        [JsonPropertyName("opted_in")]
-        public bool OptedIn { get; set; }
-
-        [JsonPropertyName("activated")]
-        public bool Activated { get; set; }
-
-        [JsonPropertyName("proxy_ids")]
-        public List<string>? ProxyIds { get; set; }
-
-        [JsonPropertyName("identifiers")]
-        public List<Identifier>? Identifiers { get; set; }
-
-        [JsonPropertyName("available_points")]
-        public decimal AvailablePoints { get; set; }
-
-        [JsonPropertyName("test_points")]
-        public decimal TestPoints { get; set; }
-
-        [JsonPropertyName("unclaimed_achievement_count")]
-        public int UnclaimedAchievementCount { get; set; }
-
-        [JsonPropertyName("email")]
-        public string? Email { get; set; }
-
-        [JsonPropertyName("dob")]
-        public string? DOB { get; set; }
-
-        [JsonPropertyName("created_at")]
-        public string? CreatedAt { get; set; }
-
-        [JsonPropertyName("updated_at")]
-        public string? UpdatedAt { get; set; }
-
-        [JsonPropertyName("suspended")]
-        public bool Suspended { get; set; }
-
-        [JsonPropertyName("last_name")]
-        public string? LastName { get; set; }
-
-        [JsonPropertyName("first_name")]
-        public string? FirstName { get; set; }
-
-        [JsonPropertyName("registered_at")]
-        public string? RegisteredAt { get; set; }
-
-        [JsonPropertyName("profile_photo_url")]
-        public string? ProfilePhotoUrl { get; set; }
-
-        [JsonPropertyName("test_account")]
-        public bool TestAccount { get; set; }
-
-        [JsonPropertyName("account_status")]
-        public string? AccountStatus { get; set; }
-
-        [JsonPropertyName("tier")]
-        public string? Tier { get; set; }
-
-        [JsonPropertyName("tier_system")]
-        public string? TierSystem { get; set; }
-
-        [JsonPropertyName("tier_points")]
-        public decimal TierPoints { get; set; }
-
-        [JsonPropertyName("next_tier_points")]
-        public decimal NextTierPoints { get; set; }
-
-        [JsonPropertyName("tier_ends_value")]
-        public decimal TierEndsValue { get; set; }
-
-        [JsonPropertyName("tier_entered_at")]
-        public string? TierEnteredAt { get; set; }
-
-        [JsonPropertyName("tier_resets_at")]
-        public string? TierResetsAt { get; set; }
-
-        [JsonPropertyName("tier_details")]
-        public TierDetails? TierDetails { get; set; }
-
-        [JsonPropertyName("referrer_code")]
-        public string? ReferrerCode { get; set; }
-
-        [JsonPropertyName("user_profile")]
-        public UserProfile? UserProfile { get; set; }
-
-        [JsonPropertyName("phone_numbers")]
-        public List<PhoneNumber>? PhoneNumbers { get; set; }
+        [JsonPropertyName("tier_details")]               public TierDetails? TierDetails { get; init; }
+        [JsonPropertyName("referrer_code")]              public string? ReferrerCode { get; init; }
+        [JsonPropertyName("user_profile")]               public UserProfile? UserProfile { get; init; }
+        [JsonPropertyName("phone_numbers")]              public List<PhoneNumber>? PhoneNumbers { get; init; }
     }
 
-    public class Identifier
+    public sealed class UserIdentifier
     {
-        [JsonPropertyName("external_id")]
-        public string? ExternalId { get; set; }
-
-        [JsonPropertyName("external_id_type")]
-        public string? ExternalIdType { get; set; }
+        [JsonPropertyName("external_id")]      public string ExternalId { get; init; } = default!;
+        [JsonPropertyName("external_id_type")] public string ExternalIdType { get; init; } = default!;
     }
 
-    public class PhoneNumber
+    public sealed class TierDetails
     {
-        [JsonPropertyName("phone_number")]
-        public string? Number { get; set; }
-
-        [JsonPropertyName("phone_type")]
-        public string? PhoneType { get; set; }
-
-        [JsonPropertyName("preference_flags")]
-        public List<string>? PreferenceFlags { get; set; }
-
-        [JsonPropertyName("verified_ownership")]
-        public bool VerifiedOwnership { get; set; }
+        [JsonPropertyName("tier_levels")]             public List<TierLevel> TierLevels { get; init; } = new();
+        [JsonPropertyName("point_account_balances")]  public PointAccountBalances? PointAccountBalances { get; init; }
     }
 
-    public class TierDetails
+    public sealed class TierLevel
     {
-        [JsonPropertyName("tier_levels")]
-        public List<TierLevel>? TierLevels { get; set; }
-
-        [JsonPropertyName("point_account_balances")]
-        public PointAccountBalances? PointAccountBalances { get; set; }
+        [JsonPropertyName("tier_system_id")] public string TierSystemId { get; init; } = default!;
+        [JsonPropertyName("tier_level_id")]  public string TierLevelId { get; init; } = default!;
+        [JsonPropertyName("user_id")]        public string UserId { get; init; } = default!;
+        [JsonPropertyName("join_date")]      public string JoinDate { get; init; } = default!;
+        [JsonPropertyName("tier_overview")]  public TierOverview? TierOverview { get; init; }
+        [JsonPropertyName("tier_progress")]  public List<object> TierProgress { get; init; } = new(); // empty array for now
     }
 
-    public class TierLevel
+    public sealed class TierOverview
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("tier_system_id")]
-        public string? TierSystemId { get; set; }
-
-        [JsonPropertyName("tier_level_id")]
-        public string? TierLevelId { get; set; }
-
-        [JsonPropertyName("user_id")]
-        public string? UserId { get; set; }
-
-        [JsonPropertyName("join_date")]
-        public string? JoinDate { get; set; }
-
-        [JsonPropertyName("next_maintenance_eval_date")]
-        public string? NextMaintenanceEvalDate { get; set; }
-
-        [JsonPropertyName("tier_overview")]
-        public TierOverview? TierOverview { get; set; }
-
-        [JsonPropertyName("next_tier_overview")]
-        public TierOverview? NextTierOverview { get; set; }
-
-        [JsonPropertyName("tier_progress")]
-        public List<TierProgress>? TierProgress { get; set; }
+        [JsonPropertyName("id")]              public string Id { get; init; } = default!;
+        [JsonPropertyName("tier_system_id")] public string TierSystemId { get; init; } = default!;
+        [JsonPropertyName("retailer_id")]    public string RetailerId { get; init; } = default!;
+        [JsonPropertyName("name")]           public string Name { get; init; } = default!;
+        [JsonPropertyName("rank")]           public int Rank { get; init; }
+        [JsonPropertyName("status")]         public int Status { get; init; }
     }
 
-    public class TierOverview
+    public sealed class PointAccountBalances
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("tier_system_id")]
-        public string? TierSystemId { get; set; }
-
-        [JsonPropertyName("retailer_id")]
-        public string? RetailerId { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("rank")]
-        public int Rank { get; set; }
-
-        [JsonPropertyName("status")]
-        public int Status { get; set; }
+        [JsonPropertyName("retailer_id")] public string RetailerId { get; init; } = default!;
+        [JsonPropertyName("user_id")]     public string UserId { get; init; } = default!;
+        [JsonPropertyName("summary")]     public PointBalanceSummary? Summary { get; init; }
+        [JsonPropertyName("details")]     public List<PointAccountDetail> Details { get; init; } = new();
     }
 
-    public class TierProgress
+    public sealed class PointBalanceSummary
     {
-        [JsonPropertyName("rule_tree_id")]
-        public string? RuleTreeId { get; set; }
-
-        [JsonPropertyName("rules")]
-        public List<RuleProgress>? Rules { get; set; }
+        [JsonPropertyName("total_points")]     public double TotalPoints { get; init; }
+        [JsonPropertyName("life_time_points")] public double LifeTimePoints { get; init; }
     }
 
-    public class RuleProgress
+    public sealed class PointAccountDetail
     {
-        [JsonPropertyName("query_result")]
-        public decimal? QueryResult { get; set; }
-
-        [JsonPropertyName("rule_id")]
-        public string? RuleId { get; set; }
-
-        [JsonPropertyName("parent_id")]
-        public string? ParentId { get; set; }
-
-        [JsonPropertyName("tree_id")]
-        public string? TreeId { get; set; }
-
-        [JsonPropertyName("rule_passed")]
-        public bool RulePassed { get; set; }
-
-        [JsonPropertyName("rule")]
-        public Rule? Rule { get; set; }
-
-        [JsonPropertyName("discriminator")]
-        public int Discriminator { get; set; }
-
-        [JsonPropertyName("rule_tree_name")]
-        public string? RuleTreeName { get; set; }
+        [JsonPropertyName("account_name")]          public string AccountName { get; init; } = default!;
+        [JsonPropertyName("user_point_account_id")] public string UserPointAccountId { get; init; } = default!;
+        [JsonPropertyName("point_account_id")]      public string PointAccountId { get; init; } = default!;
+        [JsonPropertyName("grouping_label")]        public string GroupingLabel { get; init; } = default!;
+        [JsonPropertyName("available_balance")]     public double AvailableBalance { get; init; }
+        [JsonPropertyName("life_time_value")]       public double LifeTimeValue { get; init; }
     }
 
-    public class Rule
+    public sealed class UserProfile
     {
-        [JsonPropertyName("discriminator")]
-        public int Discriminator { get; set; }
-
-        [JsonPropertyName("target_balance")]
-        public decimal? TargetBalance { get; set; }
-
-        [JsonPropertyName("comparison")]
-        public int? Comparison { get; set; }
-
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("retailer_id")]
-        public string? RetailerId { get; set; }
-
-        [JsonPropertyName("parent_id")]
-        public string? ParentId { get; set; }
-
-        [JsonPropertyName("rank")]
-        public int Rank { get; set; }
-
-        [JsonPropertyName("is_new")]
-        public bool IsNew { get; set; }
-
-        [JsonPropertyName("constraints")]
-        public List<Constraint>? Constraints { get; set; }
+        [JsonPropertyName("_version")]              public int Version { get; init; }
+        [JsonPropertyName("country_code")]          public string CountryCode { get; init; } = default!;
+        [JsonPropertyName("country_name")]          public string CountryName { get; init; } = default!;
+        [JsonPropertyName("market_pref_email")]     public bool MarketPrefEmail { get; init; }
+        [JsonPropertyName("market_pref_push")]      public bool MarketPrefPush { get; init; }
+        [JsonPropertyName("active_status")]         public string ActiveStatus { get; init; } = default!;
+        [JsonPropertyName("language_preference")]   public string LanguagePreference { get; init; } = default!;
+        [JsonPropertyName("burn_pin")]              public string BurnPin { get; init; } = default!;
+        [JsonPropertyName("car_detail")]            public List<CarDetail> CarDetail { get; init; } = new();
     }
 
-    public class Constraint
+    public sealed class CarDetail
     {
-        [JsonPropertyName("discriminator")]
-        public int Discriminator { get; set; }
-
-        [JsonPropertyName("point_accounts")]
-        public Dictionary<string, string>? PointAccounts { get; set; }
-
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("rule_id")]
-        public string? RuleId { get; set; }
-
-        [JsonPropertyName("is_new")]
-        public bool IsNew { get; set; }
-
-        [JsonPropertyName("rank")]
-        public int Rank { get; set; }
-
-        [JsonPropertyName("version")]
-        public int Version { get; set; }
+        [JsonPropertyName("car_plate")]     public string CarPlate { get; init; } = default!;
+        [JsonPropertyName("iu_number")]     public string IuNumber { get; init; } = default!;
+        [JsonPropertyName("is_sg")]         public bool IsSG { get; init; }
+        [JsonPropertyName("last_updated")]  public string LastUpdated { get; init; } = default!;
     }
 
-    public class PointAccountBalances
+    public sealed class PhoneNumber
     {
-        [JsonPropertyName("retailer_id")]
-        public string? RetailerId { get; set; }
-
-        [JsonPropertyName("user_id")]
-        public string? UserId { get; set; }
-
-        [JsonPropertyName("summary")]
-        public PointsSummary? Summary { get; set; }
-
-        [JsonPropertyName("details")]
-        public List<PointAccountDetail>? Details { get; set; }
+        [JsonPropertyName("phone_number")]       public string Phone { get; init; } = default!;
+        [JsonPropertyName("phone_type")]         public string PhoneType { get; init; } = default!;
+        [JsonPropertyName("preference_flags")]   public List<string> PreferenceFlags { get; init; } = new();
+        [JsonPropertyName("verified_ownership")] public bool VerifiedOwnership { get; init; }
     }
-
-    public class PointsSummary
-    {
-        [JsonPropertyName("total_points")]
-        public decimal TotalPoints { get; set; }
-
-        [JsonPropertyName("life_time_points")]
-        public decimal LifeTimePoints { get; set; }
-    }
-
-    public class PointAccountDetail
-    {
-        [JsonPropertyName("account_name")]
-        public string? AccountName { get; set; }
-
-        [JsonPropertyName("user_point_account_id")]
-        public string? UserPointAccountId { get; set; }
-
-        [JsonPropertyName("point_account_id")]
-        public string? PointAccountId { get; set; }
-
-        [JsonPropertyName("grouping_label")]
-        public string? GroupingLabel { get; set; }
-
-        [JsonPropertyName("available_balance")]
-        public decimal AvailableBalance { get; set; }
-
-        [JsonPropertyName("life_time_value")]
-        public decimal LifeTimeValue { get; set; }
-    }
-
-    public class UserProfile
-    {
-        [JsonPropertyName("_version")]
-        public int Version { get; set; }
-
-        [JsonPropertyName("country_code")]
-        public string? CountryCode { get; set; }
-
-        [JsonPropertyName("country_name")]
-        public string? CountryName { get; set; }
-
-        [JsonPropertyName("market_pref_email")]
-        public bool MarketPrefEmail { get; set; }
-
-        [JsonPropertyName("market_pref_sms")]
-        public bool MarketPrefSms { get; set; }
-
-        [JsonPropertyName("market_pref_push")]
-        public bool MarketPrefPush { get; set; }
-
-        [JsonPropertyName("previous_email")]
-        public string? PreviousEmail { get; set; }
-
-        [JsonPropertyName("active_status")]
-        public string? ActiveStatus { get; set; }
-
-        [JsonPropertyName("language_preference")]
-        public string? LanguagePreference { get; set; }
-
-        [JsonPropertyName("car_detail")]
-        public List<object>? CarDetail { get; set; }
-    }
-} 
+}
