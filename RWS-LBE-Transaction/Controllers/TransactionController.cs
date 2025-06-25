@@ -20,17 +20,20 @@ namespace RWS_LBE_Transaction.Controllers
         private readonly ILogger<TransactionController> _logger;
         private readonly IRlpService _rlpService;
         private readonly ITransactionSequenceService _transactionSequenceService;
+        private readonly IErrorHandler _errorHandler;
         private readonly ExternalApiConfig _externalApiConfig;
 
         public TransactionController(
             IRlpService rlpService,
             ILogger<TransactionController> logger,
             ITransactionSequenceService transactionSequenceService,
+            IErrorHandler errorHandler,
             IOptions<ExternalApiConfig> externalApiConfig)
         {
             _rlpService = rlpService;
             _logger = logger;
             _transactionSequenceService = transactionSequenceService;
+            _errorHandler = errorHandler;
             _externalApiConfig = externalApiConfig.Value;
         }
 
@@ -45,7 +48,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all user transaction.");
-                return RlpApiErrors.Handle(ex);
+                return _errorHandler.Handle(ex);
             }
         }
 
@@ -61,7 +64,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get all store transactions.");
-                return RlpApiErrors.Handle(ex);
+                return _errorHandler.Handle(ex);
             }
         }
 
@@ -76,7 +79,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[API EXCEPTION] RLP: Failed to get user points.");
-                return RlpApiErrors.Handle(ex);
+                return _errorHandler.Handle(ex);
             }
         }
 
@@ -95,7 +98,7 @@ namespace RWS_LBE_Transaction.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating transaction ID record");
-                return RlpApiErrors.Handle(ex);
+                return _errorHandler.Handle(ex);
             }
 
             // Set the generated transaction ID in the payload
