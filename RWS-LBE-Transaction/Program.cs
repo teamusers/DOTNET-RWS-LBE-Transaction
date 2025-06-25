@@ -30,6 +30,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRlpService, RlpService>();
 builder.Services.AddScoped<IVmsService, VmsService>();
 builder.Services.AddScoped<ITransactionSequenceService, TransactionSequenceService>();
+builder.Services.AddScoped<IErrorHandler, ErrorHandler>();
 
 // Add http client helper implementation
 builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
