@@ -18,6 +18,13 @@ namespace RWS_LBE_Transaction.Common
         public const string NON_ITD = "N";
     }
 
+    public class VmsEnums
+    {
+        public const string TRANSACTION_TYPE_ITD = "I";
+        public const string TRANSACTION_TYPE_NON_ITD = "N";
+        public const string DEFAULT_TERMINAL_CODE = "RLP";
+    }
+
     public class VmsApiErrors
     {
         public static IActionResult Handle(Exception ex)

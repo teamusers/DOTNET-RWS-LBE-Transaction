@@ -80,7 +80,7 @@ namespace RWS_LBE_Transaction.Helpers
 
         public static bool ValidateTransactionType(string transactionType)
         {
-            if (transactionType == TransactionTypeCodes.ITD || transactionType == TransactionTypeCodes.NON_ITD)
+            if (transactionType == VmsEnums.TRANSACTION_TYPE_ITD || transactionType == VmsEnums.TRANSACTION_TYPE_NON_ITD)
             {
                 return true;
             }

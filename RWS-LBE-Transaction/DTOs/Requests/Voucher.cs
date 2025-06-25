@@ -28,6 +28,9 @@ namespace RWS_LBE_Transaction.DTOs.Requests
     {
         [JsonPropertyName("voucher_no")]
         public required string VoucherNo { get; set; }
+
+        [JsonPropertyName("utilize_date_time")]
+        public required DateTime UtilizeDateTime { get; set; }
     }
 
     public class SyncVoucherRequest

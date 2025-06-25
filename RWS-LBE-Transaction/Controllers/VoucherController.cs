@@ -82,6 +82,8 @@ namespace RWS_LBE_Transaction.Controllers
             voucher.SystemTransactionID = Guid.NewGuid().ToString();
 
             // Issue Voucher on VMS (Retry up to 3 Times if timeout)
+            voucher.TerminalCode = VmsEnums.DEFAULT_TERMINAL_CODE;
+
             int retryCount = 0;
             const int maxRetries = 3;
             InterfaceResponseHeaderDT? interfaceResponseHeaderDT = null;
@@ -182,6 +184,10 @@ namespace RWS_LBE_Transaction.Controllers
             // Generate new systemTransactionId
 
             voucher.SystemTransactionID = Guid.NewGuid().ToString();
+
+            // issue voucher to vms
+            voucher.TerminalCode = VmsEnums.DEFAULT_TERMINAL_CODE;
+            
             try
             {
                 var issueVoucherResponse = await _vms.IssueVoucher(voucher);
@@ -245,9 +251,9 @@ namespace RWS_LBE_Transaction.Controllers
                 var voucher = new VoucherUtilizationParamDT
                 {
                     SystemTransactionID = Guid.NewGuid().ToString(),
-                    TerminalCode = "mockterminalcode", //TODO: figure out value is from where
+                    TerminalCode = VmsEnums.DEFAULT_TERMINAL_CODE,
                     VoucherNo = req.VoucherNo,
-                    UtilizeDateTime = DateTime.Now, //TODO: figure out value is from where
+                    UtilizeDateTime = req.UtilizeDateTime
                 };
 
                 var utilizeVoucherResponse = await _vms.UtilizeVoucher(voucher);
