@@ -1,251 +1,71 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 {
-    public class UserTransactionResponse
+
+    public sealed class UserTransactionResponse
     {
         [JsonPropertyName("status")]
-        public string Status { get; set; } = string.Empty;
+        public string? Status { get; init; }
 
         [JsonPropertyName("result")]
-        public List<UserTransaction> Result { get; set; } = new();
+        public List<Result>? Result { get; init; }
 
         [JsonPropertyName("grouping_field")]
-        public string? GroupingField { get; set; }
+        public string? GroupingField { get; init; }
 
         [JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; init; }
 
         [JsonPropertyName("event_types")]
-        public List<EventType> EventTypes { get; set; } = new();
+        public List<EventType>? EventTypes { get; init; }
     }
 
-    public class UserTransaction
+    public sealed class Result
     {
         [JsonPropertyName("event_stream_stream_id")]
-        public string EventStreamStreamId { get; set; } = string.Empty;
+        public Guid EventStreamStreamId { get; init; }
 
         [JsonPropertyName("event_stream_event_category_id")]
-        public int EventStreamEventCategoryId { get; set; }
+        public int EventCategoryId { get; init; }
 
         [JsonPropertyName("event_stream_event_type_id")]
-        public int EventStreamEventTypeId { get; set; }
+        public int EventTypeId { get; init; }
 
         [JsonPropertyName("target_id")]
-        public int TargetId { get; set; }
+        public int TargetId { get; init; }
 
         [JsonPropertyName("timestamp")]
-        public long Timestamp { get; set; }
+        public long Timestamp { get; init; }
 
         [JsonPropertyName("created_at")]
-        public long CreatedAt { get; set; }
+        public long CreatedAt { get; init; }
 
         [JsonPropertyName("event_stream_payload")]
-        public TransactionPayload EventStreamPayload { get; set; } = new();
+        public JsonElement EventStreamPayload { get; init; }
 
         [JsonPropertyName("contexts")]
-        public List<JsonElement> Contexts { get; set; } = new();
+        public List<JsonElement>? Contexts { get; init; }
     }
 
-    public class TransactionPayload
-    {
-        [JsonPropertyName("business_def_collection")]
-        public List<object> BusinessDefCollection { get; set; } = new();
-
-        [JsonPropertyName("catalog_lineages")]
-        public Dictionary<string, object> CatalogLineages { get; set; } = new();
-
-        [JsonPropertyName("channel")]
-        public string Channel { get; set; } = string.Empty;
-
-        [JsonPropertyName("check_amount")]
-        public decimal CheckAmount { get; set; }
-
-        [JsonPropertyName("create_date")]
-        public DateTime CreateDate { get; set; }
-
-        [JsonPropertyName("created_at")]
-        public long CreatedAt { get; set; }
-
-        [JsonPropertyName("custom_data")]
-        public object? CustomData { get; set; }
-
-        [JsonPropertyName("discounts")]
-        public List<object> Discounts { get; set; } = new();
-
-        [JsonPropertyName("event_category_name")]
-        public string EventCategoryName { get; set; } = string.Empty;
-
-        [JsonPropertyName("event_category_slug")]
-        public string EventCategorySlug { get; set; } = string.Empty;
-
-        [JsonPropertyName("event_type_name")]
-        public string EventTypeName { get; set; } = string.Empty;
-
-        [JsonPropertyName("event_type_slug")]
-        public string EventTypeSlug { get; set; } = string.Empty;
-
-        [JsonPropertyName("from_pos_transaction_id")]
-        public string? FromPosTransactionId { get; set; }
-
-        [JsonPropertyName("from_transaction_id")]
-        public string? FromTransactionId { get; set; }
-
-        [JsonPropertyName("guest_count")]
-        public int GuestCount { get; set; }
-
-        [JsonPropertyName("guest_receipt_code")]
-        public string GuestReceiptCode { get; set; } = string.Empty;
-
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("include_tax")]
-        public bool IncludeTax { get; set; }
-
-        [JsonPropertyName("is_closed")]
-        public bool IsClosed { get; set; }
-
-        [JsonPropertyName("is_voided")]
-        public bool IsVoided { get; set; }
-
-        [JsonPropertyName("items")]
-        public List<TransactionItem> Items { get; set; } = new();
-
-        [JsonPropertyName("last_updated")]
-        public DateTime LastUpdated { get; set; }
-
-        [JsonPropertyName("location_lineages")]
-        public Dictionary<string, List<List<string>>> LocationLineages { get; set; } = new();
-
-        [JsonPropertyName("location_lineages_core")]
-        public List<List<LocationNode>> LocationLineagesCore { get; set; } = new();
-
-        [JsonPropertyName("modified_time")]
-        public DateTime ModifiedTime { get; set; }
-
-        [JsonPropertyName("open_time")]
-        public DateTime OpenTime { get; set; }
-
-        [JsonPropertyName("payments")]
-        public List<TransactionPaymentDTO> Payments { get; set; } = new();
-
-        [JsonPropertyName("pos_employee_id")]
-        public string PosEmployeeId { get; set; } = string.Empty;
-
-        [JsonPropertyName("pos_transaction_id")]
-        public string PosTransactionId { get; set; } = string.Empty;
-
-        [JsonPropertyName("request_id")]
-        public string RequestId { get; set; } = string.Empty;
-
-        [JsonPropertyName("retailer_id")]
-        public string RetailerId { get; set; } = string.Empty;
-
-        [JsonPropertyName("rewards_system_id")]
-        public int RewardsSystemId { get; set; }
-
-        [JsonPropertyName("sm_employee_id")]
-        public string? SmEmployeeId { get; set; }
-
-        [JsonPropertyName("sm_transaction_process_date")]
-        public DateTime SmTransactionProcessDate { get; set; }
-
-        [JsonPropertyName("store_id")]
-        public string StoreId { get; set; } = string.Empty;
-
-        [JsonPropertyName("store_time_zone")]
-        public string StoreTimeZone { get; set; } = string.Empty;
-
-        [JsonPropertyName("subtotal")]
-        public decimal Subtotal { get; set; }
-
-        [JsonPropertyName("table_id")]
-        public string TableId { get; set; } = string.Empty;
-
-        [JsonPropertyName("taxtotal")]
-        public decimal TaxTotal { get; set; }
-
-        [JsonPropertyName("user_id")]
-        public string UserId { get; set; } = string.Empty;
-    }
-
-    public class TransactionItem
-    {
-        [JsonPropertyName("create_date")]
-        public DateTime CreateDate { get; set; }
-
-        [JsonPropertyName("custom_data")]
-        public object? CustomData { get; set; }
-
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("last_updated")]
-        public DateTime LastUpdated { get; set; }
-
-        [JsonPropertyName("line_id")]
-        public string LineId { get; set; } = string.Empty;
-
-        [JsonPropertyName("master_item_id")]
-        public string MasterItemId { get; set; } = string.Empty;
-
-        [JsonPropertyName("modifies_line_id")]
-        public string? ModifiesLineId { get; set; }
-
-        [JsonPropertyName("pos_item_key")]
-        public string PosItemKey { get; set; } = string.Empty;
-
-        [JsonPropertyName("quantity")]
-        public int Quantity { get; set; }
-
-        [JsonPropertyName("retailer_id")]
-        public string RetailerId { get; set; } = string.Empty;
-
-        [JsonPropertyName("store_id")]
-        public string StoreId { get; set; } = string.Empty;
-
-        [JsonPropertyName("subtotal")]
-        public decimal Subtotal { get; set; }
-
-        [JsonPropertyName("tax_included")]
-        public decimal TaxIncluded { get; set; }
-
-        [JsonPropertyName("transaction_id")]
-        public string TransactionId { get; set; } = string.Empty;
-
-        [JsonPropertyName("unit_price")]
-        public decimal UnitPrice { get; set; }
-    }
-
-    public class LocationNode
+    public sealed class EventType
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public int Id { get; init; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [JsonPropertyName("type")]
-        public string Type { get; set; } = string.Empty;
-    }
-
-    public class EventType
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; init; }
 
         [JsonPropertyName("slug")]
-        public string Slug { get; set; } = string.Empty;
+        public string? Slug { get; init; }
 
         [JsonPropertyName("event_stream_event_category_id")]
-        public int EventStreamEventCategoryId { get; set; }
+        public int EventCategoryId { get; init; }
 
         [JsonPropertyName("event_stream_stream_id")]
-        public int EventStreamStreamId { get; set; }
+        public int StreamId { get; init; }
     }
-} 
+}
