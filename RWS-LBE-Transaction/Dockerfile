@@ -30,7 +30,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 
 # 3) Copy publish output + templates
-COPY --from=publish /app/publish .
-COPY templates ./templates
+COPY --from=publish /app/publish . 
 
 ENTRYPOINT ["dotnet","RWS-LBE-Transaction.dll"]
