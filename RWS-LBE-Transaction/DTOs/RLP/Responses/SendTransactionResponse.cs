@@ -12,5 +12,8 @@ namespace RWS_LBE_Transaction.DTOs.RLP.Responses
 
         [JsonPropertyName("transaction_id")]
         public string? TransactionId { get; set; }
+
+        [JsonPropertyName("open_time")]
+        public DateTime? OpenTime { get; set; }
     }
 } 
