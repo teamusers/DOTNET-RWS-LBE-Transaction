@@ -33,10 +33,29 @@ builder.Services.AddScoped<ITransactionSequenceService, TransactionSequenceServi
 builder.Services.AddScoped<IErrorHandler, ErrorHandler>();
 
 // Add http client helper implementation
-builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
+if (builder.Environment.IsDevelopment())
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
+    Console.WriteLine("WARNING: Building http client helper in development mode...");
+    builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(30);
+    })
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+        return handler;
+    });
+}
+else
+{
+    builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
+}
 
 var app = builder.Build();
 
