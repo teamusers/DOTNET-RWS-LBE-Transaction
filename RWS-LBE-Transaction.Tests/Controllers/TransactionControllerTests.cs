@@ -18,7 +18,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
 {
     public class TransactionControllerTests
     {
-        private readonly Mock<IRlpService> _mockRlpService;
+        private readonly Mock<IRlpServiceTransaction> _mockRlpService;
         private readonly Mock<ILogger<TransactionController>> _mockLogger;
         private readonly Mock<ITransactionSequenceService> _mockTransactionSequenceService;
         private readonly Mock<IErrorHandler> _mockErrorHandler;
@@ -28,7 +28,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
 
         public TransactionControllerTests()
         {
-            _mockRlpService = new Mock<IRlpService>();
+            _mockRlpService = new Mock<IRlpServiceTransaction>();
             _mockLogger = new Mock<ILogger<TransactionController>>();
             _mockTransactionSequenceService = new Mock<ITransactionSequenceService>();
             _mockErrorHandler = new Mock<IErrorHandler>();

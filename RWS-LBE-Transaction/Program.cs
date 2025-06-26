@@ -27,7 +27,9 @@ builder.Services.Configure<ExternalApiConfig>(
 );
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IRlpService, RlpService>();
+builder.Services.AddScoped<IRlpServiceTransaction, RlpServiceTransaction>();
+builder.Services.AddScoped<IRlpServiceCampaign, RlpServiceCampaign>();
+builder.Services.AddScoped<IRlpServiceVoucher, RlpServiceVoucher>();
 builder.Services.AddScoped<IVmsService, VmsService>();
 builder.Services.AddScoped<ITransactionSequenceService, TransactionSequenceService>();
 builder.Services.AddScoped<IErrorHandler, ErrorHandler>();

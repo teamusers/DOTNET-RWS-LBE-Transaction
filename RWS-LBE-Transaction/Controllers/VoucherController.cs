@@ -13,9 +13,9 @@ namespace RWS_LBE_Transaction.Controllers
     public class VoucherController : ControllerBase
     {
         private readonly ILogger<CampaignController> _logger;
-        private readonly IRlpService _rlp;
+        private readonly IRlpServiceVoucher _rlp;
         private readonly IVmsService _vms;
-        public VoucherController(ILogger<CampaignController> logger, IRlpService rlpService, IVmsService vmsService)
+        public VoucherController(ILogger<CampaignController> logger, IRlpServiceVoucher rlpService, IVmsService vmsService)
         {
             _logger = logger;
             _rlp = rlpService;
