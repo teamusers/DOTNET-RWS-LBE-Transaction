@@ -12,6 +12,7 @@ using RWS_LBE_Transaction.Exceptions;
 using RWS_LBE_Transaction.Services.Interfaces;
 using System.Net;
 using Xunit;
+using RequestTransactionPayment = RWS_LBE_Transaction.DTOs.Requests.TransactionPayment;
 
 namespace RWS_LBE_Transaction.Tests.Controllers
 {
@@ -61,9 +62,15 @@ namespace RWS_LBE_Transaction.Tests.Controllers
             var eventTypes = "earn,spend";
             var count = 10;
             var since = 1234567890;
-            var expectedResponse = new { transactions = new[] { new { id = "1", amount = 100 } } };
+            var expectedResponse = new UserTransactionResponse
+            {
+                Status = "success",
+                Result = new List<Result>(),
+                Count = 1,
+                EventTypes = new List<EventType>()
+            };
 
-            _mockRlpService.Setup(x => x.ViewTransactionRaw(externalId, eventTypes, count, since))
+            _mockRlpService.Setup(x => x.ViewTransaction(externalId, eventTypes, count, since))
                 .ReturnsAsync(expectedResponse);
 
             // Act
@@ -85,7 +92,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
             var exception = new Exception("API Error");
             var expectedErrorResponse = new ConflictObjectResult(ResponseTemplate.ExistingUserNotFoundErrorResponse());
 
-            _mockRlpService.Setup(x => x.ViewTransactionRaw(externalId, null, null, null))
+            _mockRlpService.Setup(x => x.ViewTransaction(externalId, null, null, null))
                 .ThrowsAsync(exception);
 
             _mockErrorHandler.Setup(x => x.Handle(exception))
@@ -108,9 +115,17 @@ namespace RWS_LBE_Transaction.Tests.Controllers
         {
             // Arrange
             var payload = new { storeId = "store-123", date = "2024-01-01" };
-            var expectedResponse = new { transactions = new[] { new { id = "1", storeId = "store-123" } } };
+            var expectedResponse = new StoreTransactionsResponse
+            {
+                Status = "success",
+                Payload = new GetStoreTransactionsResponse
+                {
+                    TotalRecords = 1,
+                    Results = new List<PurchaseTransactionPayload>()
+                }
+            };
 
-            _mockRlpService.Setup(x => x.ViewStoreTransactionRaw(payload))
+            _mockRlpService.Setup(x => x.ViewStoreTransaction(payload))
                 .ReturnsAsync(expectedResponse);
 
             // Act
@@ -132,7 +147,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
             var exception = new Exception("Service error");
             var expectedErrorResponse = new BadRequestObjectResult(ResponseTemplate.InternalErrorResponse());
 
-            _mockRlpService.Setup(x => x.ViewStoreTransactionRaw(payload))
+            _mockRlpService.Setup(x => x.ViewStoreTransaction(payload))
                 .ThrowsAsync(exception);
 
             _mockErrorHandler.Setup(x => x.Handle(exception))
@@ -155,9 +170,13 @@ namespace RWS_LBE_Transaction.Tests.Controllers
         {
             // Arrange
             var externalId = "RWS_2";
-            var expectedResponse = new { status = "ok"};
+            var expectedResponse = new UserPointResponse
+            {
+                Status = "success",
+                User = new RlpUser()
+            };
 
-            _mockRlpService.Setup(x => x.ViewPointRaw(externalId))
+            _mockRlpService.Setup(x => x.ViewPoint(externalId))
                 .ReturnsAsync(expectedResponse);
 
             // Act
@@ -179,7 +198,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
             var exception = new Exception("Service error");
             var expectedErrorResponse = new ObjectResult(ResponseTemplate.InternalErrorResponse()) { StatusCode = 500 };
 
-            _mockRlpService.Setup(x => x.ViewPointRaw(externalId))
+            _mockRlpService.Setup(x => x.ViewPoint(externalId))
                 .ThrowsAsync(exception);
 
             _mockErrorHandler.Setup(x => x.Handle(exception))
@@ -411,13 +430,15 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    OpenTime = DateTime.Parse("2025-05-23T03:05:38.2388782Z"),  
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
                             Type = "points"
+                            
                         }
                     }
                 }
@@ -474,6 +495,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
             
             var responseData = Assert.IsType<SendTransactionResponse>(apiResponse.Data);
             Assert.Equal(transactionId, responseData.TransactionId);
+            Assert.Equal(request.RequestPayload.OpenTime, responseData.OpenTime);
         }
 
         [Fact]
@@ -512,7 +534,7 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>()
+                    Payments = new List<RequestTransactionPayment>()
                 }
             };
 
@@ -534,9 +556,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             Amount = 50.0,
                             Type = "points"
@@ -563,9 +585,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 0.0,
@@ -593,9 +615,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
@@ -630,9 +652,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
@@ -674,9 +696,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
@@ -717,9 +739,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
@@ -777,9 +799,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 150.0, // More than available balance
@@ -839,9 +861,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
@@ -906,9 +928,9 @@ namespace RWS_LBE_Transaction.Tests.Controllers
                 StoreId = "store-123",
                 RequestPayload = new SendTransactionRequestPayload
                 {
-                    Payments = new List<TransactionPayment>
+                    Payments = new List<RequestTransactionPayment>
                     {
-                        new TransactionPayment
+                        new RequestTransactionPayment
                         {
                             UserId = "user-123",
                             Amount = 50.0,
