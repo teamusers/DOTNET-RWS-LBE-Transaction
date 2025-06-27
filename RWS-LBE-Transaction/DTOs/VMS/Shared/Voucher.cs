@@ -20,7 +20,7 @@ namespace RWS_LBE_Transaction.DTOs.VMS.Shared
         public double VoucherValue { get; set; }
         public double FaceValue { get; set; }
         public double DiscountPercentage { get; set; }
-        public string? IsInclusiveGSTFlag { get; set; }
+        public bool IsInclusiveGSTFlag { get; set; }
         public DateTime IssueDateTime { get; set; }
         public DateTime ValidityStartTime { get; set; }
         public DateTime ValidityEndTime { get; set; }
