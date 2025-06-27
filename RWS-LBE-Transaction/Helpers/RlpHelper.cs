@@ -39,7 +39,15 @@ namespace RWS_LBE_Transaction.Helpers
             string url = BuildRlpUrl(config.Transaction!.Host, config.Transaction!.ApiKey, basePath, externalId, queryParams);
 
             return ((username, password), url);
-        } 
+        }
+
+        public static string BuildRlpBookingRequestInfo(RlpApiConfig config, string basePath, string? queryParams)
+        {
+
+            string url = BuildRlpUrl(config.Booking!.Host, "", basePath, "", queryParams);
+            return url;
+        }
+
 
         public static string BuildRlpUrl(string host, string apiKey, string basePath, string? externalId, string? queryParams)
         {

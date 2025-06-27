@@ -21,6 +21,8 @@ namespace RWS_LBE_Transaction.Common
         public const string UpdateOffer = "/offers/api/2.0/offers/acquisition/update";
         public const string IssueOffer = "/offers/api/2.0/offers/acquisition/issue";
         public const string ManualRedeemOffer = "/offers/api/2.0/offers/redemption/manual_redeem";
+        public const string ViewBookingList = "/rlp/v1/booking/list";
+        public const string ViewBookingDetail = "/rlp/v1/booking/detail";
     }
 
     public class RlpApiQueries

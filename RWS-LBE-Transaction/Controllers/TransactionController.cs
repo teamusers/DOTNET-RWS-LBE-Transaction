@@ -18,13 +18,13 @@ namespace RWS_LBE_Transaction.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ILogger<TransactionController> _logger;
-        private readonly IRlpService _rlpService;
+        private readonly IRlpServiceTransaction _rlpService;
         private readonly ITransactionSequenceService _transactionSequenceService;
         private readonly IErrorHandler _errorHandler;
         private readonly ExternalApiConfig _externalApiConfig;
 
         public TransactionController(
-            IRlpService rlpService,
+            IRlpServiceTransaction rlpService,
             ILogger<TransactionController> logger,
             ITransactionSequenceService transactionSequenceService,
             IErrorHandler errorHandler,

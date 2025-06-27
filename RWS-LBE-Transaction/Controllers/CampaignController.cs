@@ -14,8 +14,8 @@ namespace RWS_LBE_Transaction.Controllers
     public class CampaignController : ControllerBase
     {
         private readonly ILogger<CampaignController> _logger;
-        private readonly IRlpService _rlp;
-        public CampaignController(ILogger<CampaignController> logger, IRlpService rlpService)
+        private readonly IRlpServiceCampaign _rlp;
+        public CampaignController(ILogger<CampaignController> logger, IRlpServiceCampaign rlpService)
         {
             _logger = logger;
             _rlp = rlpService;
