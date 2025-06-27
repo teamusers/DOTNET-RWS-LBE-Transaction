@@ -34,7 +34,7 @@ namespace RWS_LBE_Transaction.Helpers
             var base64Md5 = Convert.ToBase64String(MD5.HashData(bodyBytes));
             var contentLength = bodyBytes.Length;
 
-            var contentType = "application/json";
+            var contentType = "application/json; charset=utf-8";
 
             var sigHeaders = new Dictionary<string, string>
             {
