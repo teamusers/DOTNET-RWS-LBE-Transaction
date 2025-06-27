@@ -54,8 +54,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             {
                 Method = HttpMethod.Get,
                 Url = url,
-                Headers = signingResult.Headers,
-                BypassSslValidation = true
+                Headers = signingResult.Headers 
             };
 
             return await _apiHttpClient.DoApiRequestAsync<BookingListResponse>(options);
@@ -88,8 +87,7 @@ namespace RWS_LBE_Transaction.Services.Implementations
             {
                 Method = HttpMethod.Get,
                 Url = url,
-                Headers = signingResult.Headers,
-                BypassSslValidation = true
+                Headers = signingResult.Headers 
             };
 
             return await _apiHttpClient.DoApiRequestAsync<BookingDetailResponse>(options);
