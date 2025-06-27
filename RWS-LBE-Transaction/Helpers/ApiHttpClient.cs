@@ -77,7 +77,22 @@ namespace RWS_LBE_Transaction.Helpers
                 opts.Body == null ? "<empty>" : JsonSerializer.Serialize(opts.Body, _jsonOptions),
                 headersLog);
 
-            using var response = await _httpClient.SendAsync(request); // no cancellation token
+
+            HttpResponseMessage response;
+            
+            if (opts.BypassSslValidation)
+            {
+                using var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
+                using var tempClient = new HttpClient(handler);
+                response = await tempClient.SendAsync(request);
+            }
+            else
+            {
+                response = await _httpClient.SendAsync(request);
+            }
 
             var rawResponse = await response.Content.ReadAsStringAsync();
 
