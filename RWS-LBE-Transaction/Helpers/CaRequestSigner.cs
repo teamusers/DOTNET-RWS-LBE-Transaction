@@ -17,99 +17,86 @@ namespace RWS_LBE_Transaction.Helpers
             "x-ca-signature", "x-ca-signature-headers", "x-ca-key", "x-ca-nonce"
         };
 
-        private static readonly Random _random = new Random();
-
-        /// <summary>
-        /// Creates a UUID matching the JavaScript implementation exactly
-        /// </summary>
-    public static string CreateUuid()
-    {
-        // 1️⃣  Get 16 random bytes
-        byte[] bytes = new byte[16];
-        RandomNumberGenerator.Fill(bytes);
-
-        // 2️⃣  Set version = 4  (xxxx0100)
-        bytes[6] = (byte)((bytes[6] & 0x0F) | 0x40);
-
-        // 3️⃣  Set variant = RFC 4122 (10xx xxxx)
-        bytes[8] = (byte)((bytes[8] & 0x3F) | 0x80);
-
-        // 4️⃣  Convert to Guid & string
-        return new Guid(bytes).ToString();
-    }
-
-        /// <summary>
-        /// Generates CA signing headers for the given request parameters.
-        /// </summary>
-        public static Task<CaSigningResult> SignAsync(string method, 
-                                                           string url, 
-                                                           string appKey, 
-                                                           string appSecret,
-                                                           ILogger? logger = null,
-                                                           Dictionary<string, string>? additionalHeaders = null)
+        public static string CreateUuid()
         {
-            // ──────────────────────────────────────────────────────────────────────────
-            // 1. Common values
-            // ──────────────────────────────────────────────────────────────────────────
-            var nonce = CreateUuid();                                       // x-ca-nonce
-            var now   = DateTime.Now.ToString("M/d/yyyy, h:mm:ss tt").ToUpper();   // matches JS Date().toLocaleString(). maybe wrong?
+            byte[] bytes = new byte[16];
+            RandomNumberGenerator.Fill(bytes);
+            bytes[6] = (byte)((bytes[6] & 0x0F) | 0x40); // version 4
+            bytes[8] = (byte)((bytes[8] & 0x3F) | 0x80); // variant 10xx
+            return new Guid(bytes).ToString();
+        }
 
-            string accept = "*/*";
-            string contentType = "application/json"; // For GET requests
-            string md5 = ""; // For GET requests, body is empty
+        public static Task<CaSigningResult> SignAsync(
+            string method,
+            string url,
+            string appKey,
+            string appSecret,
+            string? body = null,
+            string contentType = "application/json; charset=utf-8",
+            string accept = "*/*",
+            Dictionary<string, string>? additionalHeaders = null,
+            ILogger? logger = null)
+        {
+            // ───────────────────────────────────────────────────────────────
+            var nonce = CreateUuid();
+            var now = DateTime.UtcNow;
+            var dateHeader = now.ToString("r", CultureInfo.InvariantCulture); // RFC1123 format
+            string md5 = string.Empty;
 
-            // ──────────────────────────────────────────────────────────────────────────
-            // 2. Canonical headers (x-ca-*, sorted, **lower-case keys**)
-            // ──────────────────────────────────────────────────────────────────────────
+            if (!string.IsNullOrEmpty(body) && !contentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
+            {
+                var bodyBytes = Encoding.UTF8.GetBytes(body);
+                using var md5Hasher = MD5.Create();
+                var md5Hash = md5Hasher.ComputeHash(bodyBytes);
+                md5 = Convert.ToBase64String(md5Hash);
+            }
+
+            // ───────────────────────────────────────────────────────────────
+            // Canonical headers (x-ca-*)
             var canonicalHeaders = new List<KeyValuePair<string, string>>
             {
-
-                new KeyValuePair<string, string>("x-ca-key", appKey),
-                new KeyValuePair<string, string>("x-ca-nonce", nonce),
-                new KeyValuePair<string, string>("x-ca-signaturemethod", "HmacSHA256")
+                new("x-ca-key", appKey),
+                new("x-ca-nonce", nonce),
+                new("x-ca-signaturemethod", "HmacSHA256")
             };
 
-            // Add any additional x-ca- headers
-            // if (additionalHeaders != null)
-            // {
-            //     foreach (var header in additionalHeaders)
-            //     {
-            //         var name = header.Key.ToLowerInvariant();
-            //         if (name.StartsWith("x-ca-") && !ExcludedHeaders.Contains(name))
-            //         {
-            //             canonicalHeaders.Add(new KeyValuePair<string, string>(name, header.Value));
-            //         }
-            //     }
-            // }
+            if (additionalHeaders != null)
+            {
+                foreach (var header in additionalHeaders)
+                {
+                    var name = header.Key.ToLowerInvariant();
+                    if (name.StartsWith("x-ca-") && !ExcludedHeaders.Contains(name))
+                    {
+                        canonicalHeaders.Add(new(name, header.Value));
+                    }
+                }
+            }
 
-            var sortedHeaders = canonicalHeaders.OrderBy(p => p.Key, StringComparer.Ordinal);
-            string signatureHeaders = String.Join(",", sortedHeaders.Select(h => h.Key));
+            var sortedHeaders = canonicalHeaders.OrderBy(kv => kv.Key, StringComparer.Ordinal).ToList();
+            string signatureHeaders = string.Join(",", sortedHeaders.Select(kv => kv.Key));
 
-
-            // ──────────────────────────────────────────────────────────────────────────
-            // 3. Canonical URL (path + sorted query params)
-            // ──────────────────────────────────────────────────────────────────────────
+            // ───────────────────────────────────────────────────────────────
+            // Canonical URL
             string canonicalUrl = UrlToSign(url);
 
-            // ──────────────────────────────────────────────────────────────────────────
-            // 4. Build the string to sign
-            // ──────────────────────────────────────────────────────────────────────────
+            // ───────────────────────────────────────────────────────────────
+            // Build text to sign
             var sb = new StringBuilder();
-            sb.Append(method)  .Append('\n')
-              .Append(accept)  .Append('\n')
-              .Append(md5)     .Append('\n')
-              .Append(contentType) .Append('\n')
-              .Append(now)     .Append('\n');
+            sb.Append(method).Append('\n')
+              .Append(accept).Append('\n')
+              .Append(md5).Append('\n')
+              .Append(contentType).Append('\n')
+              .Append(dateHeader).Append('\n');
 
             foreach (var kv in sortedHeaders)
                 sb.Append(kv.Key).Append(':').Append(kv.Value).Append('\n');
 
             sb.Append(canonicalUrl);
+
             string textToSign = sb.ToString();
 
-            // ──────────────────────────────────────────────────────────────────────────
-            // 5. HMAC-SHA256 and Base64
-            // ──────────────────────────────────────────────────────────────────────────
+            // ───────────────────────────────────────────────────────────────
+            // HMAC-SHA256 signature
             string signature;
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(appSecret)))
             {
@@ -117,52 +104,45 @@ namespace RWS_LBE_Transaction.Helpers
                 signature = Convert.ToBase64String(hash);
             }
 
-            // ──────────────────────────────────────────────────────────────────────────
-            // 6. Return the headers
-            // ──────────────────────────────────────────────────────────────────────────
+            // ───────────────────────────────────────────────────────────────
+            // Final headers
             var result = new CaSigningResult
             {
                 Headers = new Dictionary<string, string>
                 {
                     { "X-Ca-Key", appKey },
                     { "X-Ca-Nonce", nonce },
-                    { "X-Ca-Signature", signature },
-                    { "X-Ca-Signature-Headers", "x-ca-key,x-ca-nonce,x-ca-signaturemethod" },
                     { "X-Ca-SignatureMethod", "HmacSHA256" },
-                    { "Date", now },
-                    { "Content-MD5", "" }
+                    { "X-Ca-Signature-Headers", signatureHeaders },
+                    { "X-Ca-Signature", signature },
+                    { "Date", dateHeader },
+                    { "Accept", accept },
+                    { "Content-MD5", md5 },
+                    { "Content-Type", contentType }
                 }
             };
 
             return Task.FromResult(result);
         }
 
-        // =============  helpers  ====================================================
-
         private static string UrlToSign(string url)
         {
             var uri = new Uri(url);
             var paramBag = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
-            // ── ①  query string ------------------------------------------------------
+            // Parse query string
             var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-            foreach (string k in query.AllKeys.Where(k => k != null))
+            foreach (string? k in query.AllKeys.Where(k => k != null))
             {
-                var value = query[k];
+                var value = query[k!];
                 if (value != null)
-                    paramBag[k] = value;
+                    paramBag[k!] = value;
             }
 
-            // ── ②  canonical path (exact slash build that the JS does) --------------
-            var segments = uri.AbsolutePath
-                          .Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var path = String.Join("/", segments.Select(s => Uri.UnescapeDataString(s)));
-            path = "/" + path;                               // JS prepends a slash
-
-            // ── ③  attach sorted params --------------------------------------------
+            var path = uri.AbsolutePath; // Keep slashes as-is
             if (paramBag.Count == 0) return path;
 
-            var qs = String.Join("&", paramBag.Select(p => $"{p.Key}={p.Value}"));
+            var qs = string.Join("&", paramBag.Select(p => $"{p.Key}={p.Value}"));
             return $"{path}?{qs}";
         }
     }
@@ -171,4 +151,4 @@ namespace RWS_LBE_Transaction.Helpers
     {
         public Dictionary<string, string> Headers { get; set; } = new();
     }
-} 
+}

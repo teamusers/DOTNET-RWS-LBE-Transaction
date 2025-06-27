@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Azure;
 using RWS_LBE_Transaction.DTOs.Shared;
 using RWS_LBE_Transaction.Exceptions;
 
@@ -32,6 +33,15 @@ namespace RWS_LBE_Transaction.Helpers
         {
             using var request = new HttpRequestMessage(opts.Method, opts.Url);
 
+            // Determine if a Content-Type is expected (even for GET)
+            string? headerContentType = null;
+            if (opts.Headers != null &&
+                opts.Headers.TryGetValue("Content-Type", out var contentTypeHeader) &&
+                !string.IsNullOrWhiteSpace(contentTypeHeader))
+            {
+                headerContentType = contentTypeHeader;
+            }
+
             if (opts.Body != null)
             {
                 if (opts.ContentType == "application/x-www-form-urlencoded" && opts.Body is Dictionary<string, string> formDict)
@@ -44,6 +54,12 @@ namespace RWS_LBE_Transaction.Helpers
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                     opts.ContentType = "application/json"; // normalize
                 }
+            }
+            else if (opts.Method == HttpMethod.Get && !string.IsNullOrEmpty(headerContentType))
+            {
+                // For GET: force empty content to attach Content-Type if required
+                request.Content = new StringContent(string.Empty);
+                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(headerContentType);
             }
 
             // bearer token takes priority
@@ -62,40 +78,50 @@ namespace RWS_LBE_Transaction.Helpers
             {
                 foreach (var (key, value) in opts.Headers)
                 {
-                    request.Headers.TryAddWithoutValidation(key, value);
+                    if (key.Equals("Date", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (DateTimeOffset.TryParse(value, out var parsedDate))
+                        {
+                            request.Headers.Date = parsedDate;
+                        }
+                        else
+                        {
+                            request.Headers.TryAddWithoutValidation(key, value);
+                        }
+                    }
+                    else if (key.Equals("Content-MD5", StringComparison.OrdinalIgnoreCase) && request.Content != null)
+                    {
+                        request.Content.Headers.ContentMD5 = Convert.FromBase64String(value);
+                    }
+                    else if (!key.Equals("Content-Type", StringComparison.OrdinalIgnoreCase)) // already handled above
+                    {
+                        request.Headers.TryAddWithoutValidation(key, value);
+                    }
                 }
             }
 
-            var headersLog = opts.Headers != null
-                ? string.Join(", ", opts.Headers.Select(h => $"{h.Key}: {h.Value}"))
+            var generalHeaders = string.Join(", ",
+                request.Headers.Select(h => $"{h.Key}: {string.Join(";", h.Value)}"));
+
+            var contentHeaders = request.Content?.Headers != null
+                ? string.Join(", ", request.Content.Headers.Select(h => $"{h.Key}: {string.Join(";", h.Value)}"))
                 : "<none>";
 
-            _logger.LogInformation("[API REQUEST] {Method} {Url}; Content-Type: {ContentType}; Body: {Body}; Headers: {Headers}",
-                opts.Method,
-                opts.Url,
-                opts.ContentType,
-                opts.Body == null ? "<empty>" : JsonSerializer.Serialize(opts.Body, _jsonOptions),
-                headersLog);
+            var requestBody = request.Content == null
+                ? "<empty>"
+                : await request.Content.ReadAsStringAsync(); // logs actual serialized body
 
+            _logger.LogInformation(
+                "[API REQUEST] {Method} {Url}; Headers: {GeneralHeaders}; Content-Headers: {ContentHeaders}; Body: {Body}",
+                request.Method,
+                request.RequestUri,
+                generalHeaders,
+                contentHeaders,
+                requestBody);
 
-            HttpResponseMessage response;
-            
-            if (opts.BypassSslValidation)
-            {
-                using var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-                };
-                using var tempClient = new HttpClient(handler);
-                response = await tempClient.SendAsync(request);
-            }
-            else
-            {
-                response = await _httpClient.SendAsync(request);
-            }
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             var rawResponse = await response.Content.ReadAsStringAsync();
-
             var sanitized = rawResponse.Replace("\n", " ").Replace("\t", " ").Trim();
 
             _logger.LogInformation("[API RESPONSE] Status: {StatusCode}; Body: {Body}",
@@ -110,6 +136,7 @@ namespace RWS_LBE_Transaction.Helpers
             {
                 return default;
             }
+
             T? result;
             try
             {
@@ -122,6 +149,7 @@ namespace RWS_LBE_Transaction.Helpers
 
             return result;
         }
+
 
     }
 }

@@ -5,6 +5,7 @@ using RWS_LBE_Transaction.DTOs.RLP.Responses;
 using RWS_LBE_Transaction.DTOs.Shared;
 using RWS_LBE_Transaction.Helpers;
 using RWS_LBE_Transaction.Services.Interfaces;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace RWS_LBE_Transaction.Services.Implementations
@@ -15,7 +16,10 @@ namespace RWS_LBE_Transaction.Services.Implementations
         private readonly IApiHttpClient _apiHttpClient;
         private readonly ILogger<RlpServiceBooking> _logger;
 
-        public RlpServiceBooking(IOptions<ExternalApiConfig> configOptions, IApiHttpClient apiHttpClient, ILogger<RlpServiceBooking> logger)
+        public RlpServiceBooking(
+            IOptions<ExternalApiConfig> configOptions,
+            IApiHttpClient apiHttpClient,
+            ILogger<RlpServiceBooking> logger)
         {
             _config = configOptions.Value.RlpApiConfig
                 ?? throw new ArgumentNullException(nameof(configOptions), "RlpApiConfig section is missing");
@@ -27,26 +31,23 @@ namespace RWS_LBE_Transaction.Services.Implementations
         {
             var queryParams = new Dictionary<string, string>();
 
-            if (!string.IsNullOrEmpty(currentPage))
-                queryParams.Add("currentPage", currentPage);
-            if (!string.IsNullOrEmpty(ngid))
-                queryParams.Add("ngid", ngid);
-            if (!string.IsNullOrEmpty(status))
-                queryParams.Add("status", status);
-            if (!string.IsNullOrEmpty(type))
-                queryParams.Add("type", type);
-            if (!string.IsNullOrEmpty(pageSize))
-                queryParams.Add("pageSize", pageSize);
+            if (!string.IsNullOrEmpty(currentPage)) queryParams["currentPage"] = currentPage;
+            if (!string.IsNullOrEmpty(ngid)) queryParams["ngid"] = ngid;
+            if (!string.IsNullOrEmpty(status)) queryParams["status"] = status;
+            if (!string.IsNullOrEmpty(type)) queryParams["type"] = type;
+            if (!string.IsNullOrEmpty(pageSize)) queryParams["pageSize"] = pageSize;
 
-            var url = BuildRlpBookingRequestInfo("/rlp/v1/booking/list", queryParams);
+            var url = BuildUrl("/rlp/v1/booking/list", queryParams);
 
-            // Generate CA signing headers
             var signingResult = await CaRequestSigner.SignAsync(
-                "GET", 
-                url, 
-                _config.Booking!.ApiKey, 
-                _config.Booking!.ApiSecret,
-                _logger
+                method: "GET",
+                url: url,
+                appKey: _config.Booking!.ApiKey,
+                appSecret: _config.Booking!.ApiSecret,
+                body: "", // No body for GET
+                contentType: "application/json; charset=utf-8",
+                accept: "*/*",
+                logger: _logger
             );
 
             var options = new ApiRequestOptions
@@ -67,20 +68,20 @@ namespace RWS_LBE_Transaction.Services.Implementations
                 { "orderNo", orderNo }
             };
 
-            if (!string.IsNullOrEmpty(ngid))
-                queryParams.Add("ngid", ngid);
-            if (!string.IsNullOrEmpty(status))
-                queryParams.Add("status", status);
+            if (!string.IsNullOrEmpty(ngid)) queryParams["ngid"] = ngid;
+            if (!string.IsNullOrEmpty(status)) queryParams["status"] = status;
 
-            var url = BuildRlpBookingRequestInfo("/api/booking/detail", queryParams);
+            var url = BuildUrl("/api/booking/detail", queryParams);
 
-            // Generate CA signing headers
             var signingResult = await CaRequestSigner.SignAsync(
-                "GET", 
-                url, 
-                _config.Booking!.ApiKey, 
-                _config.Booking!.ApiSecret,
-                _logger
+                method: "GET",
+                url: url,
+                appKey: _config.Booking!.ApiKey,
+                appSecret: _config.Booking!.ApiSecret,
+                body: "", // GET request has no body
+                contentType: "application/json; charset=utf-8",
+                accept: "*/*",
+                logger: _logger
             );
 
             var options = new ApiRequestOptions
@@ -94,19 +95,20 @@ namespace RWS_LBE_Transaction.Services.Implementations
             return await _apiHttpClient.DoApiRequestAsync<BookingDetailResponse>(options);
         }
 
-        private string BuildRlpBookingRequestInfo(string endpoint, Dictionary<string, string> queryParams)
+        private string BuildUrl(string endpoint, Dictionary<string, string> queryParams)
         {
             var baseUrl = _config.Booking!.Host.TrimEnd('/');
-            var endpointPath = endpoint.TrimStart('/');
-            var fullUrl = $"{baseUrl}/{endpointPath}";
+            var path = endpoint.TrimStart('/');
+            var fullUrl = $"{baseUrl}/{path}";
 
-            if (queryParams.Any())
+            if (queryParams.Count > 0)
             {
-                var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+                var queryString = string.Join("&", queryParams
+                    .Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
                 fullUrl += $"?{queryString}";
             }
 
             return fullUrl;
         }
     }
-} 
+}
