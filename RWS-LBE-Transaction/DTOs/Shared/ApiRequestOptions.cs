@@ -11,7 +11,6 @@ namespace RWS_LBE_Transaction.DTOs.Shared
         public string? BearerToken { get; set; }
         public (string Username, string Password)? BasicAuth { get; set; }
         public Dictionary<string, string>? Headers { get; set; }
-        public HttpStatusCode ExpectedStatus { get; set; } = HttpStatusCode.OK;
-        public bool BypassSslValidation { get; set; } = false;
+        public HttpStatusCode ExpectedStatus { get; set; } = HttpStatusCode.OK; 
     }
 }
